@@ -23,7 +23,17 @@ const externalLinks = [
   },
 ];
 
-function LandingPage() {
+interface LandingPageProps {
+  canContinue: boolean;
+  onBuildWorld: () => void;
+  onContinue: () => void;
+}
+
+function LandingPage({
+  canContinue,
+  onBuildWorld,
+  onContinue,
+}: LandingPageProps) {
   return (
     <main className="bg-background text-foreground relative isolate min-h-svh overflow-hidden">
       <div className="mx-auto flex min-h-svh w-full max-w-6xl flex-col px-6 py-6 sm:px-10 lg:px-12">
@@ -70,9 +80,19 @@ function LandingPage() {
           </a>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+            {canContinue && (
+              <button
+                className="bg-primary text-background inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-5 text-base font-semibold transition-colors hover:brightness-110"
+                onClick={onContinue}
+                type="button"
+              >
+                <ArrowUpRight aria-hidden="true" className="size-5" />
+                繼續上次世界
+              </button>
+            )}
             <button
               aria-label="隨機生成，功能即將推出"
-              className="bg-primary text-background inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-5 text-base font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70"
+              className="bg-primary text-background inline-flex min-h-12 cursor-not-allowed items-center justify-center gap-2 rounded-md px-5 text-base font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70"
               disabled
               type="button"
             >
@@ -80,16 +100,18 @@ function LandingPage() {
               隨機生成
             </button>
             <button
-              aria-label="自行建立，功能即將推出"
-              className="border-secondary bg-surface text-foreground inline-flex min-h-12 items-center justify-center gap-2 rounded-md border px-5 text-base font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70"
-              disabled
+              aria-label="建立空白世界"
+              className="border-secondary bg-surface text-foreground hover:border-primary/60 hover:bg-surface-hover inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-md border px-5 text-base font-semibold transition-colors"
+              onClick={onBuildWorld}
               type="button"
             >
               <Hammer aria-hidden="true" className="text-primary size-5" />
               自行建立
             </button>
           </div>
-          <p className="text-muted mt-4 text-sm">世界建造功能準備中。</p>
+          <p className="text-muted mt-4 text-sm">
+            從一個六角格開始，逐步建立你的世界。
+          </p>
         </section>
 
         <footer className="grid gap-3 border-t border-white/10 pt-6 sm:grid-cols-2">
