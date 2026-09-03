@@ -13,6 +13,8 @@ Hexacalm 是一個以六角 Tile 建造 3D 世界的沉浸式聲景網頁應用�
 - Undo / Redo 建造操作，歷史上限為 50 步
 - 在 Build / Relax Mode 間切換
 - 使用 Orbit、Zoom 與 Pan 瀏覽 3D 世界
+- 依整張世界的 Tile 種類與數量自動混合環境音，並限制同時播放的音源數
+- 控制環境音的播放、暫停、靜音與主音量
 - 將世界版本、模式與 Tile 資料自動儲存至 LocalStorage
 - 世界上限為 100 個 Tile
 
@@ -21,7 +23,7 @@ Hexacalm 是一個以六角 Tile 建造 3D 世界的沉浸式聲景網頁應用�
 以下功能已列入產品規格，但目前尚未完成：
 
 - 隨機世界生成（Landing Page 按鈕目前停用）
-- 實際環境音訊、Tile 聲音混合與 Listener 邏輯
+- Character Listener 與依角色位置、方向變化的局部環境音
 - 角色選擇、自動道路移動與速度控制
 - Third-person / First-person 相機
 - Sleep Timer
@@ -35,7 +37,7 @@ Hexacalm 是一個以六角 Tile 建造 3D 世界的沉浸式聲景網頁應用�
 - Three.js、React Three Fiber、Drei
 - Zustand
 - Tailwind CSS v4
-- Tone.js（已安裝，音訊功能待串接）
+- Tone.js
 - Vitest、Playwright（已安裝，測試設定待建立）
 
 ## 開始開發
@@ -80,6 +82,7 @@ npm run preview      # 預覽正式版建置結果
 
 ```text
 src/
+├── audio/            # World mix 計算與 Tone.js 播放引擎
 ├── components/       # 建造工具、通用 UI、Tile 與 3D 世界元件
 ├── constants/        # Tile catalog 與世界限制
 ├── hooks/            # 建造操作與 LocalStorage 持久化 hooks
@@ -88,6 +91,7 @@ src/
 ├── types/            # 世界、座標與 Tile 型別
 └── utils/            # 六角座標及儲存資料驗證
 public/
+├── audio/            # 環境音檔與來源記錄
 ├── models/           # GLB Tile 模型與共用材質
 ├── previews/         # Tile Picker 預覽圖
 └── license/          # 第三方資產授權

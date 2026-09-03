@@ -5,7 +5,7 @@ interface WorldControlsProps {
   playing: boolean;
   volume: number;
   onMutedChange: (muted: boolean) => void;
-  onPlayingChange: (playing: boolean) => void;
+  onPlayingChange: (playing: boolean) => void | Promise<void>;
   onVolumeChange: (volume: number) => void;
 }
 

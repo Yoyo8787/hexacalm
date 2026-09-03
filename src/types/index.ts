@@ -1,5 +1,8 @@
 export type WorldMode = "build" | "relax";
 
+export type AmbientSourceId =
+  "forest" | "river" | "water" | "settlement" | "rural" | "harbor" | "magic";
+
 export type TileCategoryId =
   "ground" | "forest" | "mountain" | "water" | "road" | "structure";
 
@@ -17,6 +20,12 @@ export interface TileDefinition {
   defaultRotation: number;
   roadConnections: boolean[];
   traversable: boolean;
+  audio: TileAudioAttributes | null;
+}
+
+export interface TileAudioAttributes {
+  source: AmbientSourceId;
+  weight: number;
 }
 
 export interface PlacedTile extends HexCoordinate {
@@ -28,4 +37,10 @@ export interface WorldData {
   version: number;
   mode: WorldMode;
   tiles: Record<string, PlacedTile>;
+}
+
+export interface AudioMixSource {
+  source: AmbientSourceId;
+  targetVolume: number;
+  priorityScore: number;
 }

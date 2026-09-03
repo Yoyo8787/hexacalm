@@ -1,10 +1,9 @@
-import { useState } from "react";
+import AudioController from "../components/audio/AudioController";
 import BuildToolbar from "../components/build/BuildToolbar";
 import TilePicker from "../components/build/TilePicker";
 import WorldStatus from "../components/build/WorldStatus";
 import ErrorBoundary from "../components/common/ErrorBoundary";
 import Header from "../components/common/Header";
-import WorldControls from "../components/common/WorldControls";
 import WorldCanvas from "../components/world/WorldCanvas";
 import { useWorldStore } from "../stores";
 
@@ -13,9 +12,6 @@ interface WorldPageProps {
 }
 
 function WorldPage({ onBack }: WorldPageProps) {
-  const [muted, setMuted] = useState(false);
-  const [playing, setPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.7);
   const mode = useWorldStore((state) => state.world.mode);
   const setMode = useWorldStore((state) => state.setMode);
 
@@ -26,14 +22,7 @@ function WorldPage({ onBack }: WorldPageProps) {
         <ErrorBoundary>
           <WorldCanvas />
         </ErrorBoundary>
-        <WorldControls
-          muted={muted}
-          onMutedChange={setMuted}
-          onPlayingChange={setPlaying}
-          onVolumeChange={setVolume}
-          playing={playing}
-          volume={volume}
-        />
+        <AudioController />
         {mode === "build" && (
           <>
             <BuildToolbar />

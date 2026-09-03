@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useWorldPersistence } from "./hooks";
 import LandingPage from "./pages/LandingPage";
-import WorldPage from "./pages/WorldPage";
 import { useWorldStore } from "./stores";
+
+const WorldPage = lazy(() => import("./pages/WorldPage"));
 
 type AppPage = "landing" | "world";
 
@@ -17,7 +18,20 @@ function App() {
   useWorldPersistence();
 
   if (page === "world") {
-    return <WorldPage onBack={() => setPage("landing")} />;
+    return (
+      <Suspense
+        fallback={
+          <main
+            aria-busy="true"
+            className="bg-background text-foreground grid h-svh place-items-center"
+          >
+            正在載入世界…
+          </main>
+        }
+      >
+        <WorldPage onBack={() => setPage("landing")} />
+      </Suspense>
+    );
   }
 
   return (
