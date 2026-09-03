@@ -1,4 +1,4 @@
-import type { AmbientSourceId } from "../types";
+import type { AmbientSourceId, AudioSettings } from "../types";
 
 export interface AmbientSourceConfig {
   filePath: string;
@@ -11,6 +11,13 @@ export const AUDIBLE_VOLUME_THRESHOLD = 0.05;
 export const MAX_AMBIENT_LOOPS = 3;
 export const SOURCE_REPLACEMENT_MARGIN = 0.15;
 export const DEFAULT_MASTER_VOLUME = 0.7;
+export const AUDIO_PERSIST_DELAY = 0.3;
+
+export const DEFAULT_AUDIO_SETTINGS: AudioSettings = {
+  volume: DEFAULT_MASTER_VOLUME,
+  muted: false,
+  playing: false,
+};
 
 export const AUDIO_FADE = {
   loopIn: 0.5,

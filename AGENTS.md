@@ -12,7 +12,7 @@
 ## 專案不變量
 
 - `useWorldStore` 是世界與建造狀態的唯一來源；不要在元件建立第二份世界狀態。
-- 世界目前只有一份，資料格式由 `WorldData` 與 `WORLD_SCHEMA_VERSION` 管理。改變持久化格式時同步更新型別、驗證、版本與相容策略。
+- 世界目前只有一份，資料格式由 `WorldData` 與 `WORLD_SCHEMA_VERSION` 管理。LocalStorage 內存的是 `WorldData` 再加上 `audio` 設定，組合與拆解只發生在 `utils/storage`。改變持久化格式時同步更新型別、驗證、版本與相容策略。
 - 六角格使用 axial coordinate（`q`, `r`），key 統一透過 `coordinateKey` 產生。
 - Tile 旋轉是 `0..5` 的離散值，每一步代表順時針 60°。
 - 新 Tile 必須在 `TILE_CATALOG` 有唯一 ID，並提供相符的 `/public/models/<id>.glb` 與 `/public/previews/<id>.png`；若缺少資產，明確保留 fallback 或回報缺口。
@@ -20,8 +20,10 @@
 - Relax Mode 必須取消 Tile 選取與 Remove Mode，且不應顯示任何建造介面。
 - Build action 的優先順序是 Remove Mode、已選 Tile 的放置/取代、無選取時旋轉。每次成功操作都必須更新 Undo history 並清空 Redo future。
 - LocalStorage 內容必須先驗證再 hydrate；無效或版本不符的資料應清除並安全回到空白狀態。
-- 目前音訊控制只有 `WorldPage` 的本地 UI 狀態；除非任務要求串接音訊，不要將它描述成可播放聲景。
-- `public/license/License.txt` 是 Kenney 資產授權來源；修改或新增第三方資產時保留並補充正確授權資訊。
+- 音訊狀態（`volume`、`muted`、`playing`）的唯一來源是 `useAudioStore`；`ambientAudioEngine` 只接受指令，不對外公開播放狀態，也不要在元件用 `useSyncExternalStore` 反向讀取它。
+- 環境音混音由 `audio/mixer` 依整張世界計算，`audio/loopPlan` 決定同時播放的音源；Tile 的音訊屬性一律放在 `TILE_CATALOG` 的 `audio` 欄位，不要在 engine 內硬編碼來源。
+- 瀏覽器需要使用者手勢才能啟動 AudioContext；還原 `playing` 為 true 時由 engine 等待下一次手勢自動接上，不要把狀態降級成暫停。
+- `public/license/README.md` 是第三方資產授權索引，指向 Kenney 的 `License.txt` 與音訊的 `public/audio/ATTRIBUTION.md`；修改或新增第三方資產時保留既有記錄並補上正確授權資訊。
 
 ## 修改原則
 

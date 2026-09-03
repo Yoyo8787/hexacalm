@@ -1,18 +1,59 @@
 import { useEffect } from "react";
-import { useWorldStore } from "../stores";
+import {
+  AUDIO_PERSIST_DELAY,
+  DEFAULT_AUDIO_SETTINGS,
+} from "../constants/audio";
+import { useAudioStore, useWorldStore } from "../stores";
 import { loadWorld, saveWorld } from "../utils/storage";
 
 export function useWorldPersistence(): void {
   useEffect(() => {
-    const savedWorld = loadWorld();
-    useWorldStore.getState().hydrateWorld(savedWorld);
+    const storedState = loadWorld();
+    useWorldStore.getState().hydrateWorld(storedState?.world ?? null);
+    useAudioStore
+      .getState()
+      .hydrateAudio(storedState?.audio ?? DEFAULT_AUDIO_SETTINGS);
 
-    return useWorldStore.subscribe((state, previousState) => {
-      if (!state.hydrated || state.world === previousState.world) {
+    const persist = () => {
+      const { hydrated, world } = useWorldStore.getState();
+      if (!hydrated) {
         return;
       }
-      saveWorld(state.world);
+
+      const { volume, muted, playing } = useAudioStore.getState();
+      saveWorld({ world, audio: { volume, muted, playing } });
+    };
+
+    let audioTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const persistAudio = () => {
+      if (audioTimer) {
+        clearTimeout(audioTimer);
+      }
+
+      audioTimer = setTimeout(() => {
+        audioTimer = null;
+        persist();
+      }, AUDIO_PERSIST_DELAY * 1000);
+    };
+
+    const unsubscribeWorld = useWorldStore.subscribe((state, previousState) => {
+      if (state.world === previousState.world) {
+        return;
+      }
+      persist();
     });
+    const unsubscribeAudio = useAudioStore.subscribe(persistAudio);
+
+    return () => {
+      unsubscribeWorld();
+      unsubscribeAudio();
+
+      if (audioTimer) {
+        clearTimeout(audioTimer);
+        persist();
+      }
+    };
   }, []);
 }
 

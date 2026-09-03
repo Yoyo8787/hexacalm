@@ -1,5 +1,12 @@
 import { WORLD_SCHEMA_VERSION, WORLD_STORAGE_KEY } from "../../constants/world";
-import type { PlacedTile, WorldData } from "../../types";
+import type { AudioSettings, PlacedTile, WorldData } from "../../types";
+
+type SerializedState = WorldData & { audio: AudioSettings };
+
+export interface StoredState {
+  world: WorldData;
+  audio: AudioSettings;
+}
 
 function isPlacedTile(value: unknown): value is PlacedTile {
   if (!value || typeof value !== "object") {
@@ -15,22 +22,38 @@ function isPlacedTile(value: unknown): value is PlacedTile {
   );
 }
 
-function isWorldData(value: unknown): value is WorldData {
+function isAudioSettings(value: unknown): value is AudioSettings {
   if (!value || typeof value !== "object") {
     return false;
   }
 
-  const world = value as Partial<WorldData>;
+  const audio = value as Partial<AudioSettings>;
   return (
-    world.version === WORLD_SCHEMA_VERSION &&
-    (world.mode === "build" || world.mode === "relax") &&
-    !!world.tiles &&
-    typeof world.tiles === "object" &&
-    Object.values(world.tiles).every(isPlacedTile)
+    typeof audio.volume === "number" &&
+    audio.volume >= 0 &&
+    audio.volume <= 1 &&
+    typeof audio.muted === "boolean" &&
+    typeof audio.playing === "boolean"
   );
 }
 
-export function loadWorld(): WorldData | null {
+function isSerializedState(value: unknown): value is SerializedState {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const stored = value as Partial<SerializedState>;
+  return (
+    stored.version === WORLD_SCHEMA_VERSION &&
+    (stored.mode === "build" || stored.mode === "relax") &&
+    !!stored.tiles &&
+    typeof stored.tiles === "object" &&
+    Object.values(stored.tiles).every(isPlacedTile) &&
+    isAudioSettings(stored.audio)
+  );
+}
+
+export function loadWorld(): StoredState | null {
   try {
     const serializedWorld = localStorage.getItem(WORLD_STORAGE_KEY);
     if (!serializedWorld) {
@@ -38,11 +61,12 @@ export function loadWorld(): WorldData | null {
     }
 
     const parsedWorld: unknown = JSON.parse(serializedWorld);
-    if (!isWorldData(parsedWorld)) {
+    if (!isSerializedState(parsedWorld)) {
       throw new Error("Saved world has an unsupported format.");
     }
 
-    return parsedWorld;
+    const { audio, ...world } = parsedWorld;
+    return { world, audio };
   } catch (error) {
     console.error("Unable to restore the saved world.", error);
     localStorage.removeItem(WORLD_STORAGE_KEY);
@@ -50,9 +74,10 @@ export function loadWorld(): WorldData | null {
   }
 }
 
-export function saveWorld(world: WorldData): void {
+export function saveWorld({ world, audio }: StoredState): void {
   try {
-    localStorage.setItem(WORLD_STORAGE_KEY, JSON.stringify(world));
+    const serializedWorld = JSON.stringify({ ...world, audio });
+    localStorage.setItem(WORLD_STORAGE_KEY, serializedWorld);
   } catch (error) {
     console.error("Unable to save the world.", error);
   }

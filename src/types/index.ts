@@ -39,6 +39,12 @@ export interface WorldData {
   tiles: Record<string, PlacedTile>;
 }
 
+export interface AudioSettings {
+  volume: number;
+  muted: boolean;
+  playing: boolean;
+}
+
 export interface AudioMixSource {
   source: AmbientSourceId;
   targetVolume: number;

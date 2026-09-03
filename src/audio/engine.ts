@@ -18,15 +18,11 @@ interface ActiveLoop {
   started: boolean;
 }
 
-type PlayingListener = (playing: boolean) => void;
-
 const EMPTY_MIX: AudioMixSource[] = [];
+const GESTURE_EVENTS = ["pointerdown", "keydown"] as const;
 
 export interface AmbientAudioEngine {
-  play: () => Promise<void>;
-  pause: () => void;
-  isPlaying: () => boolean;
-  subscribe: (listener: PlayingListener) => () => void;
+  setPlaying: (playing: boolean) => void;
   setMuted: (muted: boolean) => void;
   setMasterVolume: (volume: number) => void;
   setMix: (mix: AudioMixSource[]) => void;
@@ -36,8 +32,8 @@ export interface AmbientAudioEngine {
 export function createAmbientAudioEngine(): AmbientAudioEngine {
   const activeLoops = new Map<AmbientSourceId, ActiveLoop>();
   const pendingDisposals = new Map<ReturnType<typeof setTimeout>, () => void>();
-  const listeners = new Set<PlayingListener>();
   const unavailableSources = new Set<AmbientSourceId>();
+  let stopWaitingForGesture: (() => void) | null = null;
   let masterGain: Tone.Gain | null = null;
   let masterVolume = DEFAULT_MASTER_VOLUME;
   let mix = EMPTY_MIX;
@@ -57,15 +53,6 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
         AUDIO_FADE.master,
       );
     }
-  }
-
-  function setPlaying(nextPlaying: boolean): void {
-    if (playing === nextPlaying) {
-      return;
-    }
-
-    playing = nextPlaying;
-    listeners.forEach((listener) => listener(playing));
   }
 
   function disposeLoop(loop: ActiveLoop): void {
@@ -193,10 +180,49 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
     add.forEach(createLoop);
   }
 
-  async function play(): Promise<void> {
+  function cancelGestureWait(): void {
+    stopWaitingForGesture?.();
+    stopWaitingForGesture = null;
+  }
+
+  /**
+   * Browsers only let an AudioContext run once the page has been interacted
+   * with, so a restored playing state waits for the next pointer or key event
+   * rather than being downgraded to paused.
+   */
+  function waitForGesture(): void {
+    if (stopWaitingForGesture) {
+      return;
+    }
+
+    const onGesture = () => {
+      cancelGestureWait();
+      void startPlayback();
+    };
+
+    GESTURE_EVENTS.forEach((event) =>
+      window.addEventListener(event, onGesture, { once: true }),
+    );
+
+    stopWaitingForGesture = () =>
+      GESTURE_EVENTS.forEach((event) =>
+        window.removeEventListener(event, onGesture),
+      );
+  }
+
+  async function startPlayback(): Promise<void> {
     await Tone.start();
+
+    if (!playing) {
+      return;
+    }
+
+    if (Tone.getContext().state !== "running") {
+      waitForGesture();
+      return;
+    }
+
     ensureMasterGain();
-    setPlaying(true);
     updateMasterGain();
     activeLoops.forEach((loop) => startLoop(loop));
     sync();
@@ -207,21 +233,23 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
    * are ambience, so their playback position carries no meaning and keeping the
    * players running avoids a restart seam on the next play.
    */
-  function pause(): void {
-    setPlaying(false);
-    updateMasterGain();
-  }
+  function setPlaying(nextPlaying: boolean): void {
+    if (playing === nextPlaying) {
+      return;
+    }
 
-  function isPlaying(): boolean {
-    return playing;
-  }
+    playing = nextPlaying;
 
-  function subscribe(listener: PlayingListener): () => void {
-    listeners.add(listener);
+    if (!playing) {
+      cancelGestureWait();
+      updateMasterGain();
+      return;
+    }
 
-    return () => {
-      listeners.delete(listener);
-    };
+    startPlayback().catch((error) => {
+      console.error("Unable to start ambient audio.", error);
+      waitForGesture();
+    });
   }
 
   function setMuted(nextMuted: boolean): void {
@@ -244,6 +272,7 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
   }
 
   function dispose(): void {
+    cancelGestureWait();
     pendingDisposals.forEach((disposePending, timer) => {
       clearTimeout(timer);
       disposePending();
@@ -254,14 +283,11 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
     masterGain?.dispose();
     masterGain = null;
     mix = EMPTY_MIX;
-    setPlaying(false);
+    playing = false;
   }
 
   return {
-    play,
-    pause,
-    isPlaying,
-    subscribe,
+    setPlaying,
     setMuted,
     setMasterVolume,
     setMix,
