@@ -18,7 +18,10 @@ function isPlacedTile(value: unknown): value is PlacedTile {
     typeof tile.q === "number" &&
     typeof tile.r === "number" &&
     typeof tile.tileId === "string" &&
-    typeof tile.rotation === "number"
+    typeof tile.rotation === "number" &&
+    Number.isInteger(tile.rotation) &&
+    tile.rotation >= 0 &&
+    tile.rotation < 6
   );
 }
 

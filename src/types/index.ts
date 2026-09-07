@@ -11,17 +11,43 @@ export interface HexCoordinate {
   r: number;
 }
 
-export interface TileDefinition {
+export type HexDirection = 0 | 1 | 2 | 3 | 4 | 5;
+
+export type HexRotation = 0 | 1 | 2 | 3 | 4 | 5;
+
+export type RoadConnections = readonly [
+  boolean,
+  boolean,
+  boolean,
+  boolean,
+  boolean,
+  boolean,
+];
+
+export interface TileDefinitionBase {
   id: string;
   name: string;
   modelPath: string;
   previewPath: string;
   categories: TileCategoryId[];
-  defaultRotation: number;
-  roadConnections: boolean[];
-  traversable: boolean;
+  defaultRotation: HexRotation;
   audio: TileAudioAttributes | null;
 }
+
+export interface StandardTileDefinition extends TileDefinitionBase {
+  kind: "standard";
+  traversable: false;
+}
+
+export interface RoadTileDefinition extends TileDefinitionBase {
+  kind: "road";
+  traversable: boolean;
+  baseModelPath: string;
+  modelOffsetY: number;
+  roadConnections: RoadConnections;
+}
+
+export type TileDefinition = StandardTileDefinition | RoadTileDefinition;
 
 export interface TileAudioAttributes {
   source: AmbientSourceId;
@@ -30,7 +56,7 @@ export interface TileAudioAttributes {
 
 export interface PlacedTile extends HexCoordinate {
   tileId: string;
-  rotation: number;
+  rotation: HexRotation;
 }
 
 export interface WorldData {

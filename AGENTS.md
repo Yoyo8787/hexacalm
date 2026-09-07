@@ -14,7 +14,7 @@
 - `useWorldStore` 是世界與建造狀態的唯一來源；不要在元件建立第二份世界狀態。
 - 世界目前只有一份，資料格式由 `WorldData` 與 `WORLD_SCHEMA_VERSION` 管理。LocalStorage 內存的是 `WorldData` 再加上 `audio` 設定，組合與拆解只發生在 `utils/storage`。改變持久化格式時同步更新型別、驗證、版本與相容策略。
 - 六角格使用 axial coordinate（`q`, `r`），key 統一透過 `coordinateKey` 產生。
-- Tile 旋轉是 `0..5` 的離散值，每一步代表順時針 60°。
+- Tile 旋轉是 `0..5` 的離散值，每一步代表從世界上方俯視逆時針 60°。
 - 新 Tile 必須在 `TILE_CATALOG` 有唯一 ID，並提供相符的 `/public/models/<id>.glb` 與 `/public/previews/<id>.png`；若缺少資產，明確保留 fallback 或回報缺口。
 - `WORLD_TILE_LIMIT` 與 `HISTORY_LIMIT` 是集中管理的限制，不要在 UI 或 store 重複硬編碼。
 - Relax Mode 必須取消 Tile 選取與 Remove Mode，且不應顯示任何建造介面。

@@ -1,7 +1,7 @@
 import { HEX_SIZE } from "../../components/tile/constants";
-import type { HexCoordinate, PlacedTile } from "../../types";
+import type { HexCoordinate, HexDirection, PlacedTile } from "../../types";
 
-const HEX_DIRECTIONS: HexCoordinate[] = [
+export const HEX_DIRECTIONS: readonly HexCoordinate[] = [
   { q: 1, r: 0 },
   { q: 1, r: -1 },
   { q: 0, r: -1 },
@@ -9,6 +9,10 @@ const HEX_DIRECTIONS: HexCoordinate[] = [
   { q: -1, r: 1 },
   { q: 0, r: 1 },
 ];
+
+export function getOppositeDirection(direction: HexDirection): HexDirection {
+  return ((direction + 3) % 6) as HexDirection;
+}
 
 export function coordinateKey({ q, r }: HexCoordinate): string {
   return `${q},${r}`;

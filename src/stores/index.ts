@@ -5,7 +5,13 @@ import {
   WORLD_TILE_LIMIT,
 } from "../constants/world";
 import { getTileDefinition } from "../constants/tileCatalog";
-import type { HexCoordinate, PlacedTile, WorldData, WorldMode } from "../types";
+import type {
+  HexCoordinate,
+  HexRotation,
+  PlacedTile,
+  WorldData,
+  WorldMode,
+} from "../types";
 import { coordinateKey } from "../utils/hex";
 
 const HEX_ROTATION_COUNT = 6;
@@ -52,7 +58,7 @@ function appendHistory(history: WorldData[], world: WorldData): WorldData[] {
 function rotateTile(tile: PlacedTile): PlacedTile {
   return {
     ...tile,
-    rotation: (tile.rotation + 1) % HEX_ROTATION_COUNT,
+    rotation: ((tile.rotation + 1) % HEX_ROTATION_COUNT) as HexRotation,
   };
 }
 

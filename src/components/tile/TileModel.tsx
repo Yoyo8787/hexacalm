@@ -107,10 +107,17 @@ function TileModel({ tile, onActivate }: TileModelProps) {
       }}
     >
       <Suspense fallback={<ModelFallback />}>
-        {definition ? (
-          <LoadedModel path={definition.modelPath} />
-        ) : (
+        {!definition ? (
           <ModelFallback />
+        ) : definition.kind === "road" ? (
+          <>
+            <LoadedModel path={definition.baseModelPath} />
+            <group position={[0, definition.modelOffsetY, 0]}>
+              <LoadedModel path={definition.modelPath} />
+            </group>
+          </>
+        ) : (
+          <LoadedModel path={definition.modelPath} />
         )}
       </Suspense>
     </group>

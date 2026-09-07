@@ -1,15 +1,19 @@
 import type {
+  HexDirection,
+  RoadTileDefinition,
+  StandardTileDefinition,
   TileAudioAttributes,
   TileCategoryId,
   TileDefinition,
+  TileDefinitionBase,
 } from "../types";
 
-function defineTile(
+function defineTileBase(
   id: string,
   name: string,
   categories: TileCategoryId[],
   audio?: TileAudioAttributes,
-): TileDefinition {
+): TileDefinitionBase {
   return {
     id,
     name,
@@ -17,9 +21,45 @@ function defineTile(
     modelPath: `/models/${id}.glb`,
     previewPath: `/previews/${id}.png`,
     defaultRotation: 0,
-    roadConnections: [false, false, false, false, false, false],
-    traversable: false,
     audio: audio ?? null,
+  };
+}
+
+function defineTile(
+  id: string,
+  name: string,
+  categories: TileCategoryId[],
+  audio?: TileAudioAttributes,
+): StandardTileDefinition {
+  return {
+    ...defineTileBase(id, name, categories, audio),
+    kind: "standard",
+    traversable: false,
+  };
+}
+
+function defineRoadTile(
+  id: string,
+  name: string,
+  exits: readonly HexDirection[],
+): RoadTileDefinition {
+  return {
+    ...defineTileBase(id, name, ["road"], {
+      source: "rural",
+      weight: 0.15,
+    }),
+    kind: "road",
+    baseModelPath: "/models/grass.glb",
+    modelOffsetY: 0.2,
+    traversable: true,
+    roadConnections: [
+      exits.includes(0),
+      exits.includes(1),
+      exits.includes(2),
+      exits.includes(3),
+      exits.includes(4),
+      exits.includes(5),
+    ],
   };
 }
 
@@ -106,6 +146,20 @@ export const TILE_CATALOG: TileDefinition[] = [
     source: "river",
     weight: 1,
   }),
+  defineRoadTile("path-straight", "草地直路", [0, 3]),
+  defineRoadTile("path-corner", "草地彎路", [1, 3]),
+  defineRoadTile("path-corner-sharp", "草地急彎", [2, 3]),
+  defineRoadTile("path-start", "草地道路起點", [3]),
+  defineRoadTile("path-end", "草地道路終點", [3]),
+  defineRoadTile("path-crossing", "草地六向路口", [0, 1, 2, 3, 4, 5]),
+  defineRoadTile("path-intersectionA", "草地岔路 A", [1, 2, 3]),
+  defineRoadTile("path-intersectionB", "草地岔路 B", [0, 1, 3]),
+  defineRoadTile("path-intersectionC", "草地岔路 C", [0, 3, 5]),
+  defineRoadTile("path-intersectionD", "草地岔路 D", [0, 1, 3, 5]),
+  defineRoadTile("path-intersectionE", "草地岔路 E", [0, 2, 3, 5]),
+  defineRoadTile("path-intersectionF", "草地岔路 F", [1, 3, 5]),
+  defineRoadTile("path-intersectionG", "草地岔路 G", [0, 1, 2, 3, 5]),
+  defineRoadTile("path-intersectionH", "草地岔路 H", [0, 1, 2, 3]),
   defineTile("bridge", "橋樑", ["water", "structure"], {
     source: "water",
     weight: 0.4,
