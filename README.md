@@ -108,6 +108,15 @@ public/
 
 連接查詢依傳入的最新世界資料計算，不另存道路圖；建造操作及 Undo／Redo 後重新呼叫即可取得最新結果。目前尚未接入角色或執行移動路徑規劃，既有橋樑、河流及建築仍不可通行。
 
+## 開發除錯輸出
+
+執行 `npm run dev` 並進入世界頁面後，瀏覽器 console 會自動輸出以下資料，首次顯示目前清單，之後僅在內容改變時更新；離開世界頁面會取消訂閱，正式版不啟用。
+
+開發模式重複啟動監聽時，相同清單不會重複輸出。音軌訂閱時先提供目前清單，之後只在 engine 的 `sync()` 完成音軌增刪與調整後通知，不另外監聽音軌啟動。離開頁面時清除監聽，再次進入則重新顯示目前清單。
+
+- **音軌**：直接列出 engine 的 `activeLoops`，包含載入中的項目，每筆只有 `source` 與 `targetVolume`；代表引擎目前保留的音軌，不保證當下已發聲。`targetVolume` 是該 loop 的目標音量，不包含主音量、靜音或淡入淡出效果。暫停時不重新配置音軌，恢復播放後才同步；靜音不影響清單。移出 `activeLoops` 的音軌不再列出，即使仍在淡出。清單無音軌時輸出空清單。
+- **道路群組**：透過 `getRoadGroups(world.tiles)` 依旋轉後的雙向道路出口計算連通群組，包含獨立單格道路。輸出各組格數與成員座標，成員依 `q`、`r` 排序，群組依首個成員排序。建造及 Undo／Redo 後只有群組成員改變才輸出；無道路時輸出空清單。群組編號僅代表當次顯示順序。
+
 ## 資產授權
 
 `public/models` 與 `public/previews` 使用 Kenney 的 Hexagon Kit，採 [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) 授權；原始授權內容位於 [public/license/License.txt](./public/license/License.txt)。

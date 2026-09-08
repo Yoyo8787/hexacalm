@@ -73,3 +73,37 @@ export function getConnectedRoadNeighbors(
 
   return neighbors;
 }
+
+export function getRoadGroups(tiles: WorldData["tiles"]): HexCoordinate[][] {
+  const compareCoordinates = (first: HexCoordinate, second: HexCoordinate) =>
+    first.q - second.q || first.r - second.r;
+  const roads = Object.values(tiles)
+    .filter((tile) => getRoadState(tiles, tile))
+    .sort(compareCoordinates);
+  const visited = new Set<string>();
+  const groups: HexCoordinate[][] = [];
+
+  for (const road of roads) {
+    const key = coordinateKey(road);
+    if (visited.has(key)) {
+      continue;
+    }
+
+    const group: HexCoordinate[] = [{ q: road.q, r: road.r }];
+    visited.add(key);
+
+    for (let index = 0; index < group.length; index += 1) {
+      for (const { tile } of getConnectedRoadNeighbors(tiles, group[index])) {
+        const neighborKey = coordinateKey(tile);
+        if (!visited.has(neighborKey)) {
+          visited.add(neighborKey);
+          group.push({ q: tile.q, r: tile.r });
+        }
+      }
+    }
+
+    groups.push(group.sort(compareCoordinates));
+  }
+
+  return groups;
+}

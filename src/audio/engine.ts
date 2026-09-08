@@ -21,16 +21,24 @@ interface ActiveLoop {
 const EMPTY_MIX: AudioMixSource[] = [];
 const GESTURE_EVENTS = ["pointerdown", "keydown"] as const;
 
+export type DebugLoop = Readonly<
+  Pick<AudioMixSource, "source" | "targetVolume">
+>;
+
 export interface AmbientAudioEngine {
   setPlaying: (playing: boolean) => void;
   setMuted: (muted: boolean) => void;
   setMasterVolume: (volume: number) => void;
   setMix: (mix: AudioMixSource[]) => void;
+  subscribeDebugLoops: (
+    listener: (loops: readonly DebugLoop[]) => void,
+  ) => () => void;
   dispose: () => void;
 }
 
 export function createAmbientAudioEngine(): AmbientAudioEngine {
   const activeLoops = new Map<AmbientSourceId, ActiveLoop>();
+  const debugListeners = new Set<() => void>();
   const pendingDisposals = new Map<ReturnType<typeof setTimeout>, () => void>();
   const unavailableSources = new Set<AmbientSourceId>();
   let stopWaitingForGesture: (() => void) | null = null;
@@ -39,6 +47,26 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
   let mix = EMPTY_MIX;
   let muted = false;
   let playing = false;
+
+  function subscribeDebugLoops(
+    listener: (loops: readonly DebugLoop[]) => void,
+  ): () => void {
+    if (!import.meta.env.DEV) {
+      return () => {};
+    }
+
+    const notify = () => {
+      const loops = Array.from(activeLoops.entries())
+        .map(([source, loop]) => ({ source, targetVolume: loop.targetVolume }))
+      listener(loops);
+    };
+
+    debugListeners.add(notify);
+    notify();
+    return () => {
+      debugListeners.delete(notify);
+    };
+  }
 
   function ensureMasterGain(): void {
     if (!masterGain) {
@@ -178,6 +206,10 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
     remove.forEach((source) => removeLoop(source, AUDIO_FADE.loopOut));
     update.forEach(updateLoop);
     add.forEach(createLoop);
+
+    if (import.meta.env.DEV) {
+      debugListeners.forEach((notify) => notify());
+    }
   }
 
   function cancelGestureWait(): void {
@@ -272,6 +304,7 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
   }
 
   function dispose(): void {
+    debugListeners.clear();
     cancelGestureWait();
     pendingDisposals.forEach((disposePending, timer) => {
       clearTimeout(timer);
@@ -291,6 +324,7 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
     setMuted,
     setMasterVolume,
     setMix,
+    subscribeDebugLoops,
     dispose,
   };
 }

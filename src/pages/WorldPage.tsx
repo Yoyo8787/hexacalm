@@ -5,6 +5,7 @@ import WorldStatus from "../components/build/WorldStatus";
 import ErrorBoundary from "../components/common/ErrorBoundary";
 import Header from "../components/common/Header";
 import WorldCanvas from "../components/world/WorldCanvas";
+import { useWorldDebug } from "../hooks/useWorldDebug";
 import { useWorldStore } from "../stores";
 
 interface WorldPageProps {
@@ -14,6 +15,8 @@ interface WorldPageProps {
 function WorldPage({ onBack }: WorldPageProps) {
   const mode = useWorldStore((state) => state.world.mode);
   const setMode = useWorldStore((state) => state.setMode);
+
+  useWorldDebug();
 
   return (
     <main className="bg-background text-foreground h-svh overflow-hidden">

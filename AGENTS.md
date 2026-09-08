@@ -20,7 +20,7 @@
 - Relax Mode 必須取消 Tile 選取與 Remove Mode，且不應顯示任何建造介面。
 - Build action 的優先順序是 Remove Mode、已選 Tile 的放置/取代、無選取時旋轉。每次成功操作都必須更新 Undo history 並清空 Redo future。
 - LocalStorage 內容必須先驗證再 hydrate；無效或版本不符的資料應清除並安全回到空白狀態。
-- 音訊狀態（`volume`、`muted`、`playing`）的唯一來源是 `useAudioStore`；`ambientAudioEngine` 只接受指令，不對外公開播放狀態，也不要在元件用 `useSyncExternalStore` 反向讀取它。
+- 音訊狀態（`volume`、`muted`、`playing`）的唯一來源是 `useAudioStore`；`ambientAudioEngine` 只接受指令，不對外公開播放狀態，也不要在元件用 `useSyncExternalStore` 反向讀取它。唯一例外是開發除錯用的 `subscribeDebugLoops`，僅提供 `activeLoops` 的 `source` 與 `targetVolume`（包含載入中的音軌），不供產品 UI 使用。
 - 環境音混音由 `audio/mixer` 依整張世界計算，`audio/loopPlan` 決定同時播放的音源；Tile 的音訊屬性一律放在 `TILE_CATALOG` 的 `audio` 欄位，不要在 engine 內硬編碼來源。
 - 瀏覽器需要使用者手勢才能啟動 AudioContext；還原 `playing` 為 true 時由 engine 等待下一次手勢自動接上，不要把狀態降級成暫停。
 - `public/license/README.md` 是第三方資產授權索引，指向 Kenney 的 `License.txt` 與音訊的 `public/audio/ATTRIBUTION.md`；修改或新增第三方資產時保留既有記錄並補上正確授權資訊。
