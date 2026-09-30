@@ -42,7 +42,9 @@ function isAudioSettings(value: unknown): value is AudioSettings {
     audio.volume >= 0 &&
     audio.volume <= 1 &&
     typeof audio.muted === "boolean" &&
-    typeof audio.playing === "boolean"
+    typeof audio.playing === "boolean" &&
+    typeof audio.footstepsEnabled === "boolean" &&
+    typeof audio.callsEnabled === "boolean"
   );
 }
 

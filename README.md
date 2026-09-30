@@ -23,7 +23,9 @@ Hexacalm 是一個以六角 Tile 建造 3D 世界的沉浸式聲景網頁應用�
 - 依模型路面規劃格內路徑，支援旋轉出口、彎道、岔路隨機選路與死路折返
 - 以 0.5×–2× 滑桿調整移動與步頻，預設 1×；背景暫停移動，返回時不補跑距離
 - 依整張世界的 Tile 種類與數量自動混合環境音，並限制同時播放的音源數
-- 控制環境音的播放、暫停、靜音與主音量
+- 控制全部聲音的播放、暫停、靜音與主音量
+- 五種寵物叫聲以隨機 20–45 秒間隔播放，共用腳步聲在行走落地時觸發
+- 右上齒輪提供「腳步聲」「寵物叫聲」獨立開關，預設皆開啟並保存，Build／Relax 與無角色時均可調整
 - 將世界版本、模式、Tile 資料、精簡角色資料與音訊設定自動儲存至 LocalStorage
 - 世界上限為 100 個 Tile
 
@@ -33,7 +35,6 @@ Hexacalm 是一個以六角 Tile 建造 3D 世界的沉浸式聲景網頁應用�
 
 - 隨機世界生成（Landing Page 按鈕目前停用）
 - Character Listener 與依角色位置、方向變化的局部環境音
-- 寵物叫聲、共用腳步聲及播放排程
 - Third-person / First-person 相機
 - Sleep Timer
 - 自動化測試案例與測試指令
@@ -115,7 +116,7 @@ public/
 
 連接查詢依傳入的最新世界資料計算，不另存道路圖；建造操作及 Undo／Redo 後重新呼叫即可取得最新結果。角色出生與重新安置使用道路群組，移動只通過旋轉後雙向出口相通的道路，既有橋樑、河流及建築仍不可通行。
 
-格內路徑使用 `src/constants/roadSurfaces.ts` 從 14 款 GLB 頂面擷取的三角形資料，以相鄰三角形的共用邊規劃路線並圓滑轉角。`src/utils/roads/paths.ts` 處理模型座標、旋轉與路面有效性，`src/utils/character/movement.ts` 依路徑長度推進，1× 為每秒 0.5 世界單位，直路約兩秒一格。岔路優先排除來路，沒有其他方向時先走到格內折返點再返回；無相通出口則待機。
+格內路徑使用 `src/constants/roadSurfaces.ts` 從 14 款 GLB 頂面擷取的三角形資料，以相鄰三角形的共用邊規劃路線並圓滑轉角。`src/utils/roads/paths.ts` 處理模型座標、旋轉與路面有效性，`src/utils/character/movement.ts` 依路徑長度推進，1× 為每秒 0.25 世界單位，直路約四秒一格；位移與步頻的 1× 基準皆調整為原本的 0.5×。岔路優先排除來路，沒有其他方向時先走到格內折返點再返回；無相通出口則待機。
 
 所有建造操作及 Undo／Redo 都重新檢查目前腳底位置：仍在有效路面就保留位置並重算路線，失效才依最大群組重新安置。角色的 `position`、`route`、`enteredFrom`、`moving`、方向及速度只存在 `characterPose`；每幀只更新暫態狀態，不改動 `world`，因此不會寫入 LocalStorage 或建造歷史。背景時停止推進，返回跳過首幀時間差，不補跑背景距離。
 
@@ -123,7 +124,7 @@ public/
 
 `CharacterAnimation` 共用控制位於 `src/utils/character/animation.ts`，保留內建肢體動畫並統一落地曲線。`AnimatedCharacter` 接受行走、目標朝向、速度及 `onLand` 回呼，供道路移動與腳步聲階段串接；動畫使用各自的模型複本與 mixer，停止時凍結行走姿勢並在約 0.18 秒內混合回待機。背景分頁暫停動作，返回時不補播落地；動畫過程不更新世界存檔或建造歷史。
 
-世界存檔版本為 3，`character` 只包含 `{ id, walkingEnabled }` 或 `null`。位置、方向與速度保留在 `useWorldStore.characterPose`，不進 LocalStorage；載入及從首頁繼續世界時重新選出生道路，速度回到 1×。舊版本或無效角色資料會清除存檔，開發期間不做格式相容。建造歷史只記錄 Tile，Undo／Redo 不改變角色種類、行走意圖或模式，也不復活已移除的角色。
+世界存檔版本為 4，`audio` 保存主音量、靜音、播放與 `footstepsEnabled`／`callsEnabled`；升版會依既有政策清除版本 3 的舊世界。`character` 只包含 `{ id, walkingEnabled }` 或 `null`。位置、方向與速度保留在 `useWorldStore.characterPose`，不進 LocalStorage；載入及從首頁繼續世界時重新選出生道路，速度回到 1×。舊版本或無效角色資料會清除存檔，開發期間不做格式相容。建造歷史只記錄 Tile，Undo／Redo 不改變角色種類、行走意圖或模式，也不復活已移除的角色。
 
 ## 開發除錯輸出
 

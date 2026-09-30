@@ -2,7 +2,13 @@
 
 來源：[Kenney Cube Pets](https://kenney.nl/assets/cube-pets)。2026-09-09 下載的官方壓縮檔名稱為 `kenney_cube-pets_1.0.zip`，內附授權標示 **Cube Pets 2.0**；以包內版本為準。
 
-保留原始 GLB、PNG 預覽與 `Textures/colormap.png`，未修改模型內容，未匯入猴子及其他動物。授權為 CC0，原文保留於 [CubePets-License.txt](../public/license/CubePets-License.txt)。本批沒有新增音效。
+保留原始 GLB、PNG 預覽與 `Textures/colormap.png`，未修改模型內容，未匯入猴子及其他動物。授權為 CC0，原文保留於 [CubePets-License.txt](../public/license/CubePets-License.txt)。角色音效另取自 Pixabay，與模型授權分開。
+
+## 音效資產
+
+2026-09-30 加入五種角色叫聲及共用腳步聲，位於 `/audio/characters/{cat,chicken,dog,pig,cow,footstep}.mp3`。保留原始 MP3，未裁切或修改資產音量；腳步聲選用 joentnt 的 Walk On Grass 1，其餘沿用最初選案。完整名稱、作者、來源連結、AI 生成標記與 Pixabay 授權記錄見 [音訊來源記錄](../public/audio/ATTRIBUTION.md)。
+
+`src/audio/characterAudio.ts` 使用 Tone.Player 播放非循環音效，重用既有載入快取。叫聲播放結束後等待隨機 20–45 秒；腳步每次有效落地從頭觸發，停止前一次避免疊加。執行時增益集中在 `src/constants/audio.ts`：叫聲初始為 0.2，腳步初始為 0.12，再接到共用主音量節點。兩種音效可在進階設定分別關閉，選項保存於世界存檔。初始增益尚未經本次人工試聽調整，不宣稱音量平衡或重複觸發的聽感已驗收。
 
 | 角色 ID | 名稱 | 模型 | 預覽 |
 | --- | --- | --- | --- |

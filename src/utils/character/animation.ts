@@ -5,6 +5,7 @@ import {
   type AnimationClip,
   type Object3D,
 } from "three";
+import { CHARACTER_BASE_ANIMATION_SPEED } from "../../constants/character";
 
 const TRANSITION_SECONDS = 0.18;
 const HOP_HEIGHT = 0.1;
@@ -40,6 +41,7 @@ export class CharacterAnimation {
     speed: number,
     onLand?: () => void,
   ): void {
+    const animationSpeed = speed * CHARACTER_BASE_ANIMATION_SPEED;
     if (walking && !this.walking && this.weight === 0) this.walk.time = 0;
     if (!walking && this.walking) {
       this.landingPending = (this.root?.position.y ?? 0) > 0;
@@ -57,7 +59,7 @@ export class CharacterAnimation {
     const duration = this.walk.getClip().duration;
     this.walk
       .setEffectiveWeight(blend)
-      .setEffectiveTimeScale(walking ? speed : 0);
+      .setEffectiveTimeScale(walking ? animationSpeed : 0);
     this.idle.setEffectiveWeight(1 - blend);
     this.mixer.update(delta);
 
@@ -71,7 +73,7 @@ export class CharacterAnimation {
 
     const landed =
       walking &&
-      Math.floor((previousTime + delta * speed) / (duration / 2)) >
+      Math.floor((previousTime + delta * animationSpeed) / (duration / 2)) >
         Math.floor(previousTime / (duration / 2));
     if (landed || (this.landingPending && this.weight === 0)) {
       this.landingPending = false;

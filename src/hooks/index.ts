@@ -20,8 +20,12 @@ export function useWorldPersistence(): void {
         return;
       }
 
-      const { volume, muted, playing } = useAudioStore.getState();
-      saveWorld({ world, audio: { volume, muted, playing } });
+      const { volume, muted, playing, footstepsEnabled, callsEnabled } =
+        useAudioStore.getState();
+      saveWorld({
+        world,
+        audio: { volume, muted, playing, footstepsEnabled, callsEnabled },
+      });
     };
 
     let audioTimer: ReturnType<typeof setTimeout> | null = null;

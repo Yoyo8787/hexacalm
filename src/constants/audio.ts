@@ -14,10 +14,20 @@ export const DEFAULT_MASTER_VOLUME = 0.7;
 export const AUDIO_PERSIST_DELAY = 0.3;
 
 export const DEFAULT_AUDIO_SETTINGS: AudioSettings = {
+  footstepsEnabled: true,
+  callsEnabled: true,
   volume: DEFAULT_MASTER_VOLUME,
   muted: false,
   playing: false,
 };
+
+export const CHARACTER_AUDIO = {
+  footstepPath: "/audio/characters/footstep.mp3",
+  footstepGain: 0.15,
+  callGain: 0.2,
+  callIntervalMin: 20,
+  callIntervalMax: 45,
+} as const;
 
 export const AUDIO_FADE = {
   loopIn: 0.5,

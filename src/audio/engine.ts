@@ -3,8 +3,13 @@ import {
   AMBIENT_SOURCE_CONFIG,
   AUDIO_FADE,
   DEFAULT_MASTER_VOLUME,
+  DEFAULT_AUDIO_SETTINGS,
 } from "../constants/audio";
-import type { AmbientSourceId, AudioMixSource } from "../types";
+import type { AmbientSourceId, AudioMixSource, CharacterId } from "../types";
+import {
+  createCharacterAudio,
+  type CharacterSoundSettings,
+} from "./characterAudio";
 import { loadAmbientBuffer } from "./buffers";
 import { isEquivalentMix } from "./mixer";
 import { planLoopChanges } from "./loopPlan";
@@ -26,6 +31,9 @@ export type DebugLoop = Readonly<
 >;
 
 export interface AmbientAudioEngine {
+  setCharacter: (id: CharacterId | null) => void;
+  setCharacterSoundSettings: (settings: CharacterSoundSettings) => void;
+  playFootstep: () => void;
   setPlaying: (playing: boolean) => void;
   setMuted: (muted: boolean) => void;
   setMasterVolume: (volume: number) => void;
@@ -47,6 +55,10 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
   let mix = EMPTY_MIX;
   let muted = false;
   let playing = false;
+  let character: CharacterId | null = null;
+  let characterSettings: CharacterSoundSettings = DEFAULT_AUDIO_SETTINGS;
+  let characterAudio: ReturnType<typeof createCharacterAudio> | null = null;
+  let generation = 0;
 
   function subscribeDebugLoops(
     listener: (loops: readonly DebugLoop[]) => void,
@@ -56,8 +68,10 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
     }
 
     const notify = () => {
-      const loops = Array.from(activeLoops.entries())
-        .map(([source, loop]) => ({ source, targetVolume: loop.targetVolume }))
+      const loops = Array.from(activeLoops.entries()).map(([source, loop]) => ({
+        source,
+        targetVolume: loop.targetVolume,
+      }));
       listener(loops);
     };
 
@@ -71,6 +85,9 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
   function ensureMasterGain(): void {
     if (!masterGain) {
       masterGain = new Tone.Gain(0).toDestination();
+      characterAudio = createCharacterAudio(masterGain);
+      characterAudio.setSettings(characterSettings);
+      characterAudio.setCharacter(character);
     }
   }
 
@@ -201,7 +218,10 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
     const available = mix.filter(
       (candidate) => !unavailableSources.has(candidate.source),
     );
-    const { add, remove, update } = planLoopChanges(playingSources(), available);
+    const { add, remove, update } = planLoopChanges(
+      playingSources(),
+      available,
+    );
 
     remove.forEach((source) => removeLoop(source, AUDIO_FADE.loopOut));
     update.forEach(updateLoop);
@@ -243,9 +263,10 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
   }
 
   async function startPlayback(): Promise<void> {
+    const currentGeneration = generation;
     await Tone.start();
 
-    if (!playing) {
+    if (!playing || currentGeneration !== generation) {
       return;
     }
 
@@ -256,6 +277,7 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
 
     ensureMasterGain();
     updateMasterGain();
+    characterAudio?.setActive(playing && !muted);
     activeLoops.forEach((loop) => startLoop(loop));
     sync();
   }
@@ -271,6 +293,7 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
     }
 
     playing = nextPlaying;
+    characterAudio?.setActive(playing && !muted);
 
     if (!playing) {
       cancelGestureWait();
@@ -278,7 +301,9 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
       return;
     }
 
+    const currentGeneration = generation;
     startPlayback().catch((error) => {
+      if (!playing || currentGeneration !== generation) return;
       console.error("Unable to start ambient audio.", error);
       waitForGesture();
     });
@@ -286,6 +311,7 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
 
   function setMuted(nextMuted: boolean): void {
     muted = nextMuted;
+    characterAudio?.setActive(playing && !muted);
     updateMasterGain();
   }
 
@@ -304,6 +330,10 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
   }
 
   function dispose(): void {
+    generation++;
+    characterAudio?.dispose();
+    characterAudio = null;
+    character = null;
     debugListeners.clear();
     cancelGestureWait();
     pendingDisposals.forEach((disposePending, timer) => {
@@ -320,6 +350,15 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
   }
 
   return {
+    setCharacter: (id) => {
+      character = id;
+      characterAudio?.setCharacter(id);
+    },
+    setCharacterSoundSettings: (settings) => {
+      characterSettings = settings;
+      characterAudio?.setSettings(settings);
+    },
+    playFootstep: () => characterAudio?.playFootstep(),
     setPlaying,
     setMuted,
     setMasterVolume,

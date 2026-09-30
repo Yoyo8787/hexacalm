@@ -93,6 +93,8 @@ export interface CharacterRoute {
 }
 
 export interface AudioSettings {
+  footstepsEnabled: boolean;
+  callsEnabled: boolean;
   volume: number;
   muted: boolean;
   playing: boolean;

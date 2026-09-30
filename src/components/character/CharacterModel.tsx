@@ -113,7 +113,17 @@ function CharacterModel({ onLand }: { onLand?: () => void }) {
           walking={character.walkingEnabled && pose.moving}
           heading={pose.heading}
           speed={pose.speed}
-          onLand={onLand}
+          onLand={() => {
+            const current = useWorldStore.getState();
+            if (
+              !document.hidden &&
+              !skipFrame.current &&
+              current.world.character?.id === character.id &&
+              current.world.character.walkingEnabled &&
+              current.characterPose?.moving
+            )
+              onLand?.();
+          }}
         />
       </Suspense>
     </group>

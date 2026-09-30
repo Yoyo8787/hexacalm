@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { ambientAudioEngine } from "../../audio/engine";
 import CharacterModel from "../character/CharacterModel";
 import { useBuildActions } from "../../hooks";
 import { useWorldStore } from "../../stores";
@@ -40,7 +41,7 @@ function WorldScene() {
           />
         ))}
 
-      <CharacterModel />
+      <CharacterModel onLand={ambientAudioEngine.playFootstep} />
       <CameraControls />
     </>
   );
