@@ -15,9 +15,16 @@ Hexacalm 是一個以六角 Tile 建造 3D 世界的沉浸式聲景網頁應用�
 - Undo / Redo 建造操作，歷史上限為 50 步
 - 在 Build / Relax Mode 間切換
 - 使用 Orbit、Zoom 與 Pan 瀏覽 3D 世界
+- 加入、更換與移除貓、小雞、狗、豬、牛，Build／Relax 均保留角色控制
+- 角色在最大有效道路群組隨機出生，平手時先隨機選組；孤立道路也可加入
+- 道路修改及 Undo／Redo 後保留有效角色位置，失效時重新安置，無道路時移除且不自動復活
+- 保存角色種類與行走啟用狀態；重入世界重新出生，角色操作不加入建造歷史
+- 五種角色共用內建待機／行走動畫，沿道路小跳、平順轉向及停止落地；孤立道路待機，補通後依行走啟用狀態繼續
+- 依模型路面規劃格內路徑，支援旋轉出口、彎道、岔路隨機選路與死路折返
+- 以 0.5×–2× 滑桿調整移動與步頻，預設 1×；背景暫停移動，返回時不補跑距離
 - 依整張世界的 Tile 種類與數量自動混合環境音，並限制同時播放的音源數
 - 控制環境音的播放、暫停、靜音與主音量
-- 將世界版本、模式、Tile 資料與音訊設定自動儲存至 LocalStorage
+- 將世界版本、模式、Tile 資料、精簡角色資料與音訊設定自動儲存至 LocalStorage
 - 世界上限為 100 個 Tile
 
 ## 尚未實作
@@ -26,10 +33,9 @@ Hexacalm 是一個以六角 Tile 建造 3D 世界的沉浸式聲景網頁應用�
 
 - 隨機世界生成（Landing Page 按鈕目前停用）
 - Character Listener 與依角色位置、方向變化的局部環境音
-- 角色選擇、自動道路移動與速度控制
+- 寵物叫聲、共用腳步聲及播放排程
 - Third-person / First-person 相機
 - Sleep Timer
-- 角色使用道路連接查詢、格內行走曲線與道路修改後的角色路徑重算
 - 自動化測試案例與測試指令
 
 ## 技術棧
@@ -76,6 +82,7 @@ npm run preview      # 預覽正式版建置結果
 4. 未選取 Tile 時，點擊既有 Tile 會從世界上方俯視逆時針旋轉 60°。
 5. 開啟刪除模式後，可連續點擊 Tile 移除。
 6. 使用左上工具列復原或重做操作，或切換至 Relax Mode 隱藏建造介面。
+7. 放置道路後，從右上「寵物夥伴」選擇角色；角色沿相通道路自動行走，可調整速度、更換、移除或停止。停止時立即停止前進並原地落地，開始後從原處繼續；孤立道路會待機。
 
 目前若用已選取的同一種 Tile 點擊同種既有 Tile，該 Tile 會旋轉；選取不同 Tile 則會直接取代。
 
@@ -106,7 +113,17 @@ public/
 
 道路連接 API 位於 `src/utils/roads/index.ts`：`rotateRoadConnections` 回傳旋轉後的六方向出口，`getConnectedRoadNeighbors(world.tiles, coordinate)` 回傳 `{ direction, tile }` 陣列。方向順序沿用 `HEX_DIRECTIONS`：`(1,0)`、`(1,-1)`、`(0,-1)`、`(-1,0)`、`(-1,1)`、`(0,1)`；旋轉後出口為 `(direction + rotation) % 6`。相鄰兩格必須都可通行且相對出口同時開啟，才會連通。
 
-連接查詢依傳入的最新世界資料計算，不另存道路圖；建造操作及 Undo／Redo 後重新呼叫即可取得最新結果。目前尚未接入角色或執行移動路徑規劃，既有橋樑、河流及建築仍不可通行。
+連接查詢依傳入的最新世界資料計算，不另存道路圖；建造操作及 Undo／Redo 後重新呼叫即可取得最新結果。角色出生與重新安置使用道路群組，移動只通過旋轉後雙向出口相通的道路，既有橋樑、河流及建築仍不可通行。
+
+格內路徑使用 `src/constants/roadSurfaces.ts` 從 14 款 GLB 頂面擷取的三角形資料，以相鄰三角形的共用邊規劃路線並圓滑轉角。`src/utils/roads/paths.ts` 處理模型座標、旋轉與路面有效性，`src/utils/character/movement.ts` 依路徑長度推進，1× 為每秒 0.5 世界單位，直路約兩秒一格。岔路優先排除來路，沒有其他方向時先走到格內折返點再返回；無相通出口則待機。
+
+所有建造操作及 Undo／Redo 都重新檢查目前腳底位置：仍在有效路面就保留位置並重算路線，失效才依最大群組重新安置。角色的 `position`、`route`、`enteredFrom`、`moving`、方向及速度只存在 `characterPose`；每幀只更新暫態狀態，不改動 `world`，因此不會寫入 LocalStorage 或建造歷史。背景時停止推進，返回跳過首幀時間差，不補跑背景距離。
+
+角色目錄位於 `src/constants/characterCatalog.ts`，模型與預覽放在 `/models/characters` 與 `/previews/characters`。資產比例、朝向、動畫清單與來源見 [角色資產記錄](./docs/character-assets.md)。
+
+`CharacterAnimation` 共用控制位於 `src/utils/character/animation.ts`，保留內建肢體動畫並統一落地曲線。`AnimatedCharacter` 接受行走、目標朝向、速度及 `onLand` 回呼，供道路移動與腳步聲階段串接；動畫使用各自的模型複本與 mixer，停止時凍結行走姿勢並在約 0.18 秒內混合回待機。背景分頁暫停動作，返回時不補播落地；動畫過程不更新世界存檔或建造歷史。
+
+世界存檔版本為 3，`character` 只包含 `{ id, walkingEnabled }` 或 `null`。位置、方向與速度保留在 `useWorldStore.characterPose`，不進 LocalStorage；載入及從首頁繼續世界時重新選出生道路，速度回到 1×。舊版本或無效角色資料會清除存檔，開發期間不做格式相容。建造歷史只記錄 Tile，Undo／Redo 不改變角色種類、行走意圖或模式，也不復活已移除的角色。
 
 ## 開發除錯輸出
 
@@ -120,3 +137,5 @@ public/
 ## 資產授權
 
 `public/models` 與 `public/previews` 使用 Kenney 的 Hexagon Kit，採 [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) 授權；原始授權內容位於 [public/license/License.txt](./public/license/License.txt)。
+
+其中 `characters` 子目錄使用 Kenney Cube Pets 2.0 的五種模型、原始預覽與獨立共用貼圖，同為 CC0；原始授權位於 [CubePets-License.txt](./public/license/CubePets-License.txt)。完整來源索引見 [資產授權](./public/license/README.md)。

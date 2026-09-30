@@ -41,7 +41,11 @@ function App() {
         createBlankWorld();
         setPage("world");
       }}
-      onContinue={() => setPage("world")}
+      onContinue={() => {
+        const { world, hydrateWorld } = useWorldStore.getState();
+        hydrateWorld(world);
+        setPage("world");
+      }}
     />
   );
 }

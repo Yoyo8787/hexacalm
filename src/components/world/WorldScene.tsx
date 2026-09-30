@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import CharacterModel from "../character/CharacterModel";
 import { useBuildActions } from "../../hooks";
 import { useWorldStore } from "../../stores";
 import { getAvailableCoordinates } from "../../utils/hex";
@@ -39,6 +40,7 @@ function WorldScene() {
           />
         ))}
 
+      <CharacterModel />
       <CameraControls />
     </>
   );

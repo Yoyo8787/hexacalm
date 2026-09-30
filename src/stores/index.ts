@@ -5,7 +5,10 @@ import {
   WORLD_TILE_LIMIT,
 } from "../constants/world";
 import { getTileDefinition } from "../constants/tileCatalog";
+import { getCharacterDefinition } from "../constants/characterCatalog";
 import type {
+  CharacterId,
+  CharacterPose,
   HexCoordinate,
   HexRotation,
   PlacedTile,
@@ -13,19 +16,31 @@ import type {
   WorldMode,
 } from "../types";
 import { coordinateKey } from "../utils/hex";
+import { resolveCharacterPose } from "../utils/character";
+import { moveCharacter } from "../utils/character/movement";
+import {
+  CHARACTER_MIN_SPEED,
+  CHARACTER_MAX_SPEED,
+} from "../constants/character";
 
 const HEX_ROTATION_COUNT = 6;
 type TileMap = WorldData["tiles"];
 
 interface WorldStore {
   world: WorldData;
+  characterPose: CharacterPose | null;
   selectedTileId: string | null;
   removeMode: boolean;
-  past: WorldData[];
-  future: WorldData[];
+  past: TileMap[];
+  future: TileMap[];
   hydrated: boolean;
   createBlankWorld: () => void;
   hydrateWorld: (world: WorldData | null) => void;
+  selectCharacter: (id: CharacterId) => void;
+  removeCharacter: () => void;
+  setCharacterWalking: (enabled: boolean) => void;
+  setCharacterSpeed: (speed: number) => void;
+  advanceCharacter: (delta: number) => void;
   setMode: (mode: WorldMode) => void;
   selectTile: (tileId: string | null) => void;
   toggleRemoveMode: () => void;
@@ -39,6 +54,7 @@ export function createEmptyWorld(): WorldData {
     version: WORLD_SCHEMA_VERSION,
     mode: "build",
     tiles: {},
+    character: null,
   };
 }
 
@@ -51,8 +67,8 @@ function cloneWorld(world: WorldData): WorldData {
   };
 }
 
-function appendHistory(history: WorldData[], world: WorldData): WorldData[] {
-  return [...history.slice(-(HISTORY_LIMIT - 1)), cloneWorld(world)];
+function appendHistory(history: TileMap[], tiles: TileMap): TileMap[] {
+  return [...history.slice(-(HISTORY_LIMIT - 1)), tiles];
 }
 
 function rotateTile(tile: PlacedTile): PlacedTile {
@@ -141,8 +157,27 @@ function getNextTiles({
   return rotateTileAt(tiles, key);
 }
 
+function updateCharacterState(
+  world: WorldData,
+  pose: CharacterPose | null,
+  replan = false,
+): { world: WorldData; characterPose: CharacterPose | null } {
+  if (!world.character) {
+    return { world, characterPose: null };
+  }
+
+  const nextPose = resolveCharacterPose(world.tiles, pose, replan);
+
+  if (!nextPose) {
+    return { world: { ...world, character: null }, characterPose: null };
+  }
+
+  return { world, characterPose: nextPose };
+}
+
 export const useWorldStore = create<WorldStore>((set) => ({
   world: createEmptyWorld(),
+  characterPose: null,
   selectedTileId: null,
   removeMode: false,
   past: [],
@@ -152,6 +187,7 @@ export const useWorldStore = create<WorldStore>((set) => ({
   createBlankWorld: () =>
     set({
       world: createEmptyWorld(),
+      characterPose: null,
       selectedTileId: null,
       removeMode: false,
       past: [],
@@ -161,12 +197,89 @@ export const useWorldStore = create<WorldStore>((set) => ({
 
   hydrateWorld: (world) =>
     set({
-      world: world ? cloneWorld(world) : createEmptyWorld(),
+      ...updateCharacterState(
+        world ? cloneWorld(world) : createEmptyWorld(),
+        null,
+      ),
       selectedTileId: null,
       removeMode: false,
       past: [],
       future: [],
       hydrated: true,
+    }),
+
+  selectCharacter: (id) =>
+    set((state) => {
+      if (!getCharacterDefinition(id) || state.world.character?.id === id) {
+        return state;
+      }
+      return updateCharacterState(
+        {
+          ...state.world,
+          character: {
+            id,
+            walkingEnabled: state.world.character?.walkingEnabled ?? true,
+          },
+        },
+        state.characterPose,
+      );
+    }),
+
+  removeCharacter: () =>
+    set((state) =>
+      state.world.character
+        ? {
+            world: { ...state.world, character: null },
+            characterPose: null,
+          }
+        : state,
+    ),
+
+  setCharacterWalking: (enabled) =>
+    set((state) => {
+      const character = state.world.character;
+      if (!character || character.walkingEnabled === enabled) return state;
+      return {
+        characterPose:
+          !enabled && state.characterPose
+            ? { ...state.characterPose, moving: false }
+            : state.characterPose,
+        world: {
+          ...state.world,
+          character: { ...character, walkingEnabled: enabled },
+        },
+      };
+    }),
+
+  setCharacterSpeed: (speed) =>
+    set((state) =>
+      state.characterPose && Number.isFinite(speed)
+        ? {
+            characterPose: {
+              ...state.characterPose,
+              speed: Math.min(
+                CHARACTER_MAX_SPEED,
+                Math.max(CHARACTER_MIN_SPEED, speed),
+              ),
+            },
+          }
+        : state,
+    ),
+
+  advanceCharacter: (delta) =>
+    set((state) => {
+      if (
+        !state.world.character?.walkingEnabled ||
+        !state.characterPose ||
+        delta <= 0
+      )
+        return state;
+      const pose = moveCharacter(
+        state.world.tiles,
+        state.characterPose,
+        Math.min(delta, 0.05),
+      );
+      return pose === state.characterPose ? state : { characterPose: pose };
     }),
 
   setMode: (mode) =>
@@ -206,39 +319,48 @@ export const useWorldStore = create<WorldStore>((set) => ({
       }
 
       return {
-        world: { ...state.world, tiles: nextTiles },
-        past: appendHistory(state.past, state.world),
+        ...updateCharacterState(
+          { ...state.world, tiles: nextTiles },
+          state.characterPose,
+          true,
+        ),
+        past: appendHistory(state.past, state.world.tiles),
         future: [],
       };
     }),
 
   undo: () =>
     set((state) => {
-      const previousWorld = state.past.at(-1);
-      if (!previousWorld) {
+      const previousTiles = state.past.at(-1);
+      if (!previousTiles) {
         return state;
       }
 
       return {
-        world: cloneWorld(previousWorld),
-        past: state.past.slice(0, -1),
-        future: [cloneWorld(state.world), ...state.future].slice(
-          0,
-          HISTORY_LIMIT,
+        ...updateCharacterState(
+          { ...state.world, tiles: previousTiles },
+          state.characterPose,
+          true,
         ),
+        past: state.past.slice(0, -1),
+        future: [state.world.tiles, ...state.future].slice(0, HISTORY_LIMIT),
       };
     }),
 
   redo: () =>
     set((state) => {
-      const nextWorld = state.future[0];
-      if (!nextWorld) {
+      const nextTiles = state.future[0];
+      if (!nextTiles) {
         return state;
       }
 
       return {
-        world: cloneWorld(nextWorld),
-        past: appendHistory(state.past, state.world),
+        ...updateCharacterState(
+          { ...state.world, tiles: nextTiles },
+          state.characterPose,
+          true,
+        ),
+        past: appendHistory(state.past, state.world.tiles),
         future: state.future.slice(1),
       };
     }),

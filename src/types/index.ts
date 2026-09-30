@@ -63,6 +63,33 @@ export interface WorldData {
   version: number;
   mode: WorldMode;
   tiles: Record<string, PlacedTile>;
+  character: SavedCharacter | null;
+}
+
+export type CharacterId = "cat" | "chicken" | "dog" | "pig" | "cow";
+
+export interface SavedCharacter {
+  id: CharacterId;
+  walkingEnabled: boolean;
+}
+
+export interface CharacterPose {
+  coordinate: HexCoordinate;
+  position: RoadPoint;
+  heading: number;
+  speed: number;
+  moving: boolean;
+  enteredFrom: HexDirection | null;
+  route: CharacterRoute | null;
+}
+
+export type RoadPoint = readonly [number, number];
+export type RoadTriangle = readonly [RoadPoint, RoadPoint, RoadPoint];
+
+export interface CharacterRoute {
+  points: RoadPoint[];
+  nextPoint: number;
+  exit: HexDirection;
 }
 
 export interface AudioSettings {

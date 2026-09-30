@@ -1,4 +1,5 @@
 import AudioController from "../components/audio/AudioController";
+import CharacterControls from "../components/character/CharacterControls";
 import BuildToolbar from "../components/build/BuildToolbar";
 import TilePicker from "../components/build/TilePicker";
 import WorldStatus from "../components/build/WorldStatus";
@@ -26,6 +27,7 @@ function WorldPage({ onBack }: WorldPageProps) {
           <WorldCanvas />
         </ErrorBoundary>
         <AudioController />
+        <CharacterControls />
         {mode === "build" && (
           <>
             <BuildToolbar />

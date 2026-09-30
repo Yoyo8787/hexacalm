@@ -1,5 +1,11 @@
 import { WORLD_SCHEMA_VERSION, WORLD_STORAGE_KEY } from "../../constants/world";
-import type { AudioSettings, PlacedTile, WorldData } from "../../types";
+import { getCharacterDefinition } from "../../constants/characterCatalog";
+import type {
+  AudioSettings,
+  PlacedTile,
+  SavedCharacter,
+  WorldData,
+} from "../../types";
 
 type SerializedState = WorldData & { audio: AudioSettings };
 
@@ -40,6 +46,18 @@ function isAudioSettings(value: unknown): value is AudioSettings {
   );
 }
 
+function isSavedCharacter(value: unknown): value is SavedCharacter | null {
+  if (value === null) return true;
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const character = value as Partial<SavedCharacter>;
+  return (
+    Object.keys(character).length === 2 &&
+    typeof character.id === "string" &&
+    !!getCharacterDefinition(character.id) &&
+    typeof character.walkingEnabled === "boolean"
+  );
+}
+
 function isSerializedState(value: unknown): value is SerializedState {
   if (!value || typeof value !== "object") {
     return false;
@@ -52,6 +70,7 @@ function isSerializedState(value: unknown): value is SerializedState {
     !!stored.tiles &&
     typeof stored.tiles === "object" &&
     Object.values(stored.tiles).every(isPlacedTile) &&
+    isSavedCharacter(stored.character) &&
     isAudioSettings(stored.audio)
   );
 }
@@ -79,7 +98,16 @@ export function loadWorld(): StoredState | null {
 
 export function saveWorld({ world, audio }: StoredState): void {
   try {
-    const serializedWorld = JSON.stringify({ ...world, audio });
+    const serializedWorld = JSON.stringify({
+      ...world,
+      character: world.character
+        ? {
+            id: world.character.id,
+            walkingEnabled: world.character.walkingEnabled,
+          }
+        : null,
+      audio,
+    });
     localStorage.setItem(WORLD_STORAGE_KEY, serializedWorld);
   } catch (error) {
     console.error("Unable to save the world.", error);
