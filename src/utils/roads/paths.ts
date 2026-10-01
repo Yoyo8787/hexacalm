@@ -1,5 +1,11 @@
+import { ROAD_CENTERLINES } from "../../constants/roadCenterlines";
 import { ROAD_SURFACES } from "../../constants/roadSurfaces";
-import type { PlacedTile, RoadPoint, RoadTriangle } from "../../types";
+import type {
+  PlacedTile,
+  RoadCenterline,
+  RoadPoint,
+  RoadTriangle,
+} from "../../types";
 import { hexToWorld } from "../hex";
 
 export const distance = (a: RoadPoint, b: RoadPoint): number =>
@@ -54,9 +60,7 @@ export function isOnRoadSurface(
 }
 
 export function getRoadSpawnPosition(tile: PlacedTile): RoadPoint {
-  const centers = ROAD_SURFACES[tile.tileId].map(centroid);
-  centers.sort((a, b) => distance(a, [0, 0]) - distance(b, [0, 0]));
-  return toRoadWorld(tile, centers[0]);
+  return toRoadWorld(tile, ROAD_CENTERLINES[tile.tileId].center);
 }
 
 function sharedPortal(a: RoadTriangle, b: RoadTriangle): RoadPoint | null {
@@ -134,14 +138,11 @@ function roundCorners(
   return rounded;
 }
 
-export function findRoadPath(
-  tile: PlacedTile,
-  startWorld: RoadPoint,
-  endWorld: RoadPoint,
+function findSurfacePath(
+  start: RoadPoint,
+  end: RoadPoint,
+  triangles: readonly RoadTriangle[],
 ): RoadPoint[] {
-  const triangles = ROAD_SURFACES[tile.tileId];
-  const start = toRoadLocal(tile, startWorld);
-  const end = toRoadLocal(tile, endWorld);
   const from = triangles.findIndex((triangle) => contains(triangle, start));
   const to = triangles.findIndex((triangle) => contains(triangle, end));
   if (from < 0 || to < 0) return [];
@@ -181,7 +182,126 @@ export function findRoadPath(
     current = step.index;
   }
   points.push(start);
-  return roundCorners(points.reverse(), triangles).map((point) =>
+  return points.reverse();
+}
+
+interface CenterlinePosition {
+  branch: number;
+  offset: number;
+  point: RoadPoint;
+}
+
+function projectToCenterline(
+  position: RoadPoint,
+  guide: RoadCenterline,
+  triangles: readonly RoadTriangle[],
+): CenterlinePosition {
+  let nearest: CenterlinePosition = {
+    branch: 0,
+    offset: 0,
+    point: guide.center,
+  };
+  let nearestDistance = Infinity;
+  let nearestVisible: CenterlinePosition | null = null;
+  let visibleDistance = Infinity;
+  guide.branches.forEach((branch, branchIndex) => {
+    for (let index = 0; index < branch.length - 1; index += 1) {
+      const start = branch[index];
+      const end = branch[index + 1];
+      const dx = end[0] - start[0];
+      const dz = end[1] - start[1];
+      const t = Math.max(
+        0,
+        Math.min(
+          1,
+          ((position[0] - start[0]) * dx + (position[1] - start[1]) * dz) /
+            (dx * dx + dz * dz),
+        ),
+      );
+      const point = interpolate(start, end, t);
+      const length = distance(position, point);
+      const candidate = { branch: branchIndex, offset: index + t, point };
+      if (length < nearestDistance) {
+        nearest = candidate;
+        nearestDistance = length;
+      }
+      if (
+        length < visibleDistance &&
+        segmentOnSurface(position, point, triangles)
+      ) {
+        nearestVisible = candidate;
+        visibleDistance = length;
+      }
+    }
+  });
+  return nearestVisible ?? nearest;
+}
+
+function centerlinePath(
+  guide: RoadCenterline,
+  start: CenterlinePosition,
+  end: CenterlinePosition,
+): RoadPoint[] {
+  if (start.branch === end.branch) {
+    if (start.offset > end.offset)
+      return centerlinePath(guide, end, start).reverse();
+    return [
+      start.point,
+      ...guide.branches[start.branch].slice(
+        Math.floor(start.offset) + 1,
+        Math.ceil(end.offset),
+      ),
+      end.point,
+    ];
+  }
+  return [
+    start.point,
+    ...guide.branches[start.branch]
+      .slice(0, Math.floor(start.offset) + 1)
+      .reverse(),
+    ...guide.branches[end.branch].slice(1, Math.ceil(end.offset)),
+    end.point,
+  ];
+}
+
+export function findRoadPath(
+  tile: PlacedTile,
+  startWorld: RoadPoint,
+  endWorld: RoadPoint,
+): RoadPoint[] {
+  const triangles = ROAD_SURFACES[tile.tileId];
+  const guide = ROAD_CENTERLINES[tile.tileId];
+  const start = toRoadLocal(tile, startWorld);
+  const end = toRoadLocal(tile, endWorld);
+  if (
+    !triangles.some((triangle) => contains(triangle, start)) ||
+    !triangles.some((triangle) => contains(triangle, end))
+  )
+    return [];
+  const from = projectToCenterline(start, guide, triangles);
+  const to = projectToCenterline(end, guide, triangles);
+  const connect = (a: RoadPoint, b: RoadPoint) =>
+    segmentOnSurface(a, b, triangles)
+      ? [a, b]
+      : findSurfacePath(a, b, triangles);
+  const entry = connect(start, from.point);
+  const exit = connect(to.point, end);
+  if (!entry.length || !exit.length) return [];
+  const points = [
+    ...entry,
+    ...centerlinePath(guide, from, to).slice(1),
+    ...exit.slice(1),
+  ].filter(
+    (point, index, all) =>
+      index === 0 || distance(point, all[index - 1]) > 0.000001,
+  );
+  const onSurface = (path: RoadPoint[]) =>
+    path
+      .slice(1)
+      .every((point, index) => segmentOnSurface(path[index], point, triangles));
+  if (!onSurface(points)) return [];
+  const rounded = roundCorners(points, triangles);
+  return (onSurface(rounded) ? rounded : points).map((point) =>
     toRoadWorld(tile, point),
   );
 }

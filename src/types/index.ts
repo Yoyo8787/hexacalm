@@ -1,5 +1,12 @@
 export type WorldMode = "build" | "relax";
 
+export type CameraMode = "builder" | "third-person" | "first-person";
+
+export interface CharacterViewMotion {
+  heading: number;
+  hopHeight: number;
+}
+
 export type AmbientSourceId =
   "forest" | "river" | "water" | "settlement" | "rural" | "harbor" | "magic";
 
@@ -85,6 +92,11 @@ export interface CharacterPose {
 
 export type RoadPoint = readonly [number, number];
 export type RoadTriangle = readonly [RoadPoint, RoadPoint, RoadPoint];
+
+export interface RoadCenterline {
+  center: RoadPoint;
+  branches: readonly (readonly RoadPoint[])[];
+}
 
 export interface CharacterRoute {
   points: RoadPoint[];

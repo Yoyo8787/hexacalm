@@ -7,6 +7,7 @@ import {
 import { getTileDefinition } from "../constants/tileCatalog";
 import { getCharacterDefinition } from "../constants/characterCatalog";
 import type {
+  CameraMode,
   CharacterId,
   CharacterPose,
   HexCoordinate,
@@ -28,6 +29,7 @@ type TileMap = WorldData["tiles"];
 
 interface WorldStore {
   world: WorldData;
+  cameraMode: CameraMode;
   characterPose: CharacterPose | null;
   selectedTileId: string | null;
   removeMode: boolean;
@@ -42,6 +44,7 @@ interface WorldStore {
   setCharacterSpeed: (speed: number) => void;
   advanceCharacter: (delta: number) => void;
   setMode: (mode: WorldMode) => void;
+  setCameraMode: (mode: CameraMode) => void;
   selectTile: (tileId: string | null) => void;
   toggleRemoveMode: () => void;
   applyTileAction: (coordinate: HexCoordinate) => void;
@@ -161,15 +164,23 @@ function updateCharacterState(
   world: WorldData,
   pose: CharacterPose | null,
   replan = false,
-): { world: WorldData; characterPose: CharacterPose | null } {
+): {
+  world: WorldData;
+  characterPose: CharacterPose | null;
+  cameraMode?: CameraMode;
+} {
   if (!world.character) {
-    return { world, characterPose: null };
+    return { world, characterPose: null, cameraMode: "builder" };
   }
 
   const nextPose = resolveCharacterPose(world.tiles, pose, replan);
 
   if (!nextPose) {
-    return { world: { ...world, character: null }, characterPose: null };
+    return {
+      world: { ...world, character: null },
+      characterPose: null,
+      cameraMode: "builder",
+    };
   }
 
   return { world, characterPose: nextPose };
@@ -177,6 +188,7 @@ function updateCharacterState(
 
 export const useWorldStore = create<WorldStore>((set) => ({
   world: createEmptyWorld(),
+  cameraMode: "builder",
   characterPose: null,
   selectedTileId: null,
   removeMode: false,
@@ -187,6 +199,7 @@ export const useWorldStore = create<WorldStore>((set) => ({
   createBlankWorld: () =>
     set({
       world: createEmptyWorld(),
+      cameraMode: "builder",
       characterPose: null,
       selectedTileId: null,
       removeMode: false,
@@ -201,6 +214,7 @@ export const useWorldStore = create<WorldStore>((set) => ({
         world ? cloneWorld(world) : createEmptyWorld(),
         null,
       ),
+      cameraMode: "builder",
       selectedTileId: null,
       removeMode: false,
       past: [],
@@ -231,6 +245,7 @@ export const useWorldStore = create<WorldStore>((set) => ({
         ? {
             world: { ...state.world, character: null },
             characterPose: null,
+            cameraMode: "builder",
           }
         : state,
     ),
@@ -285,9 +300,19 @@ export const useWorldStore = create<WorldStore>((set) => ({
   setMode: (mode) =>
     set((state) => ({
       world: { ...state.world, mode },
+      cameraMode: mode === "build" ? "builder" : state.cameraMode,
       selectedTileId: mode === "relax" ? null : state.selectedTileId,
       removeMode: mode === "relax" ? false : state.removeMode,
     })),
+
+  setCameraMode: (cameraMode) =>
+    set((state) =>
+      state.world.mode === "relax" &&
+      (cameraMode === "builder" ||
+        (state.world.character && state.characterPose))
+        ? { cameraMode }
+        : state,
+    ),
 
   selectTile: (tileId) =>
     set((state) => ({
@@ -303,7 +328,7 @@ export const useWorldStore = create<WorldStore>((set) => ({
 
   applyTileAction: (coordinate) =>
     set((state) => {
-      if (state.world.mode !== "build") {
+      if (state.world.mode !== "build" || state.cameraMode !== "builder") {
         return state;
       }
 
@@ -331,6 +356,8 @@ export const useWorldStore = create<WorldStore>((set) => ({
 
   undo: () =>
     set((state) => {
+      if (state.world.mode !== "build" || state.cameraMode !== "builder")
+        return state;
       const previousTiles = state.past.at(-1);
       if (!previousTiles) {
         return state;
@@ -349,6 +376,8 @@ export const useWorldStore = create<WorldStore>((set) => ({
 
   redo: () =>
     set((state) => {
+      if (state.world.mode !== "build" || state.cameraMode !== "builder")
+        return state;
       const nextTiles = state.future[0];
       if (!nextTiles) {
         return state;

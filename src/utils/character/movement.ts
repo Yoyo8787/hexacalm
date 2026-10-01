@@ -1,4 +1,7 @@
-import { CHARACTER_BASE_SPEED } from "../../constants/character";
+import {
+  CHARACTER_BASE_SPEED,
+  CHARACTER_HEADING_LOOKAHEAD,
+} from "../../constants/character";
 import type {
   CharacterPose,
   CharacterRoute,
@@ -38,6 +41,32 @@ function planRoute(
     ];
   } else points = findRoadPath(tile, pose.position, exit);
   return points.length > 1 ? { points, nextPoint: 1, exit: direction } : null;
+}
+
+function getRouteHeading(
+  position: RoadPoint,
+  route: CharacterRoute,
+  fallback: number,
+): number {
+  let remaining = CHARACTER_HEADING_LOOKAHEAD;
+  let point = position;
+  for (let index = route.nextPoint; index < route.points.length; index += 1) {
+    const target = route.points[index];
+    const length = distance(point, target);
+    if (length > remaining) {
+      const t = remaining / length;
+      point = [
+        point[0] + (target[0] - point[0]) * t,
+        point[1] + (target[1] - point[1]) * t,
+      ];
+      break;
+    }
+    remaining -= length;
+    point = target;
+  }
+  const dx = point[0] - position[0];
+  const dz = point[1] - position[1];
+  return Math.hypot(dx, dz) > 0.000001 ? Math.atan2(dx, dz) : fallback;
 }
 
 export function moveCharacter(
@@ -84,6 +113,9 @@ export function moveCharacter(
       enteredFrom: getOppositeDirection(route.exit),
       route: null,
     };
+  }
+  if (next.moving && next.route) {
+    next.heading = getRouteHeading(next.position, next.route, next.heading);
   }
   return !next.moving && !pose.moving && next.route === pose.route
     ? pose

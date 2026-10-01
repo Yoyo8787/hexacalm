@@ -11,6 +11,7 @@ import { getTileDefinition } from "../../constants/tileCatalog";
 import { useWorldStore } from "../../stores";
 import { coordinateKey } from "../../utils/hex";
 import { CharacterAnimation } from "../../utils/character/animation";
+import type { CharacterViewMotion } from "../../types";
 
 interface CharacterMotionProps {
   path: string;
@@ -18,6 +19,7 @@ interface CharacterMotionProps {
   heading: number;
   speed: number;
   onLand?: () => void;
+  onMotion?: (motion: CharacterViewMotion) => void;
 }
 
 export function AnimatedCharacter({
@@ -26,6 +28,7 @@ export function AnimatedCharacter({
   heading,
   speed,
   onLand,
+  onMotion,
 }: CharacterMotionProps) {
   const { scene, animations } = useGLTF(path);
   const model = useMemo(() => scene.clone(true), [scene]);
@@ -65,8 +68,12 @@ export function AnimatedCharacter({
         Math.atan2(Math.sin(difference), Math.cos(difference)) *
         (1 - Math.exp(-10 * elapsed));
     }
+    onMotion?.({
+      heading: group.current?.rotation.y ?? heading,
+      hopHeight: (controller.current?.hopHeight ?? 0) * CHARACTER_MODEL_SCALE,
+    });
     state.invalidate();
-  });
+  }, -0.5);
 
   return (
     <group ref={group} rotation={[0, initialHeading, 0]}>
@@ -75,10 +82,17 @@ export function AnimatedCharacter({
   );
 }
 
-function CharacterModel({ onLand }: { onLand?: () => void }) {
+function CharacterModel({
+  onLand,
+  onMotion,
+}: {
+  onLand?: () => void;
+  onMotion?: (motion: CharacterViewMotion) => void;
+}) {
   const character = useWorldStore((state) => state.world.character);
   const pose = useWorldStore((state) => state.characterPose);
   const tiles = useWorldStore((state) => state.world.tiles);
+  const cameraMode = useWorldStore((state) => state.cameraMode);
   const skipFrame = useRef(true);
   const invalidate = useThree((state) => state.invalidate);
   useEffect(() => {
@@ -106,13 +120,17 @@ function CharacterModel({ onLand }: { onLand?: () => void }) {
   const [x, z] = pose.position;
 
   return (
-    <group position={[x, road.modelOffsetY + CHARACTER_ROAD_SURFACE_HEIGHT, z]}>
+    <group
+      visible={cameraMode !== "first-person"}
+      position={[x, road.modelOffsetY + CHARACTER_ROAD_SURFACE_HEIGHT, z]}
+    >
       <Suspense fallback={null}>
         <AnimatedCharacter
           path={definition.modelPath}
           walking={character.walkingEnabled && pose.moving}
           heading={pose.heading}
           speed={pose.speed}
+          onMotion={onMotion}
           onLand={() => {
             const current = useWorldStore.getState();
             if (

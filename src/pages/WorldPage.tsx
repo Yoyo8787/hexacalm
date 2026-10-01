@@ -5,6 +5,7 @@ import TilePicker from "../components/build/TilePicker";
 import WorldStatus from "../components/build/WorldStatus";
 import ErrorBoundary from "../components/common/ErrorBoundary";
 import Header from "../components/common/Header";
+import CameraViewControls from "../components/world/CameraViewControls";
 import WorldCanvas from "../components/world/WorldCanvas";
 import { useWorldDebug } from "../hooks/useWorldDebug";
 import { useWorldStore } from "../stores";
@@ -28,6 +29,7 @@ function WorldPage({ onBack }: WorldPageProps) {
         </ErrorBoundary>
         <AudioController />
         <CharacterControls />
+        <CameraViewControls />
         {mode === "build" && (
           <>
             <BuildToolbar />

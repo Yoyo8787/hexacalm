@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { ambientAudioEngine } from "../../audio/engine";
 import CharacterModel from "../character/CharacterModel";
 import { useBuildActions } from "../../hooks";
@@ -7,9 +7,12 @@ import { getAvailableCoordinates } from "../../utils/hex";
 import EmptyTile from "../tile/EmptyTile";
 import TileModel from "../tile/TileModel";
 import CameraControls from "./CameraControls";
+import type { CharacterViewMotion } from "../../types";
 
 function WorldScene() {
   const world = useWorldStore((state) => state.world);
+  const cameraMode = useWorldStore((state) => state.cameraMode);
+  const characterMotion = useRef<CharacterViewMotion | null>(null);
   const { applyTileAction } = useBuildActions();
   const tiles = Object.values(world.tiles);
   const availableCoordinates = useMemo(
@@ -33,6 +36,7 @@ function WorldScene() {
       ))}
 
       {world.mode === "build" &&
+        cameraMode === "builder" &&
         availableCoordinates.map((coordinate) => (
           <EmptyTile
             coordinate={coordinate}
@@ -41,8 +45,13 @@ function WorldScene() {
           />
         ))}
 
-      <CharacterModel onLand={ambientAudioEngine.playFootstep} />
-      <CameraControls />
+      <CharacterModel
+        onLand={ambientAudioEngine.playFootstep}
+        onMotion={(motion) => {
+          characterMotion.current = motion;
+        }}
+      />
+      <CameraControls characterMotion={characterMotion} />
     </>
   );
 }

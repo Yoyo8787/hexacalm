@@ -81,6 +81,10 @@ export class CharacterAnimation {
     }
   }
 
+  get hopHeight(): number {
+    return this.root?.position.y ?? 0;
+  }
+
   dispose(): void {
     this.mixer.stopAllAction();
     this.mixer.uncacheRoot(this.scene);
