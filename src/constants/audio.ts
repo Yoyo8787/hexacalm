@@ -12,6 +12,9 @@ export const MAX_AMBIENT_LOOPS = 3;
 export const SOURCE_REPLACEMENT_MARGIN = 0.15;
 export const DEFAULT_MASTER_VOLUME = 0.7;
 export const AUDIO_PERSIST_DELAY = 0.3;
+export const CHARACTER_LISTENER_RADIUS = 3;
+export const CHARACTER_MIX_SAMPLE_SPACING = 0.1;
+export const CHARACTER_MIX_UPDATE_INTERVAL = 100;
 
 export const DEFAULT_AUDIO_SETTINGS: AudioSettings = {
   footstepsEnabled: true,
