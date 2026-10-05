@@ -17,6 +17,8 @@ interface WorldPageProps {
 function WorldPage({ onBack }: WorldPageProps) {
   const mode = useWorldStore((state) => state.world.mode);
   const setMode = useWorldStore((state) => state.setMode);
+  const cameraMode = useWorldStore((state) => state.cameraMode);
+  const resetCamera = useWorldStore((state) => state.resetCamera);
 
   useWorldDebug();
 
@@ -30,6 +32,15 @@ function WorldPage({ onBack }: WorldPageProps) {
         <AudioController />
         <CharacterControls />
         <CameraViewControls />
+        {cameraMode === "builder" && (
+          <button
+            type="button"
+            onClick={resetCamera}
+            className="bg-surface/90 hover:bg-surface-hover absolute bottom-44 left-4 z-10 rounded-lg border border-white/10 px-3 py-2 text-sm shadow-xl backdrop-blur"
+          >
+            重設視角
+          </button>
+        )}
         {mode === "build" && (
           <>
             <BuildToolbar />

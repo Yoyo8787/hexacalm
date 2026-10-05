@@ -30,6 +30,7 @@ type TileMap = WorldData["tiles"];
 interface WorldStore {
   world: WorldData;
   cameraMode: CameraMode;
+  resetCameraCounter: number;
   characterPose: CharacterPose | null;
   selectedTileId: string | null;
   removeMode: boolean;
@@ -45,6 +46,7 @@ interface WorldStore {
   advanceCharacter: (delta: number) => void;
   setMode: (mode: WorldMode) => void;
   setCameraMode: (mode: CameraMode) => void;
+  resetCamera: () => void;
   selectTile: (tileId: string | null) => void;
   toggleRemoveMode: () => void;
   applyTileAction: (coordinate: HexCoordinate) => void;
@@ -189,6 +191,7 @@ function updateCharacterState(
 export const useWorldStore = create<WorldStore>((set) => ({
   world: createEmptyWorld(),
   cameraMode: "builder",
+  resetCameraCounter: 0,
   characterPose: null,
   selectedTileId: null,
   removeMode: false,
@@ -311,6 +314,13 @@ export const useWorldStore = create<WorldStore>((set) => ({
       (cameraMode === "builder" ||
         (state.world.character && state.characterPose))
         ? { cameraMode }
+        : state,
+    ),
+
+  resetCamera: () =>
+    set((state) =>
+      state.cameraMode === "builder"
+        ? { resetCameraCounter: state.resetCameraCounter + 1 }
         : state,
     ),
 

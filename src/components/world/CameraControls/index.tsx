@@ -3,17 +3,12 @@ import { OrbitControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Vector3 } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
-import { useWorldStore } from "../../stores";
-import { getTileDefinition } from "../../constants/tileCatalog";
-import { CHARACTER_ROAD_SURFACE_HEIGHT } from "../../constants/characterCatalog";
-import { coordinateKey } from "../../utils/hex";
-import type { CharacterViewMotion } from "../../types";
-
-const FOLLOW_DISTANCE = 1.8;
-const FOLLOW_HEIGHT = 1;
-const EYE_HEIGHT = 0.18;
-const TRANSITION_SECONDS = 0.65;
-const CAMERA_TURN_RESPONSE = 4;
+import { useWorldStore } from "../../../stores";
+import type { CharacterViewMotion } from "../../../types";
+import { TRANSITION_SECONDS } from "./constants";
+import { useCameraReset } from "./useCameraReset";
+import { useFollowView } from "./useFollowView";
+import { useKeyboardMove } from "./useKeyboardMove";
 
 function CameraControls({
   characterMotion,
@@ -24,10 +19,11 @@ function CameraControls({
   const camera = useThree((state) => state.camera);
   const invalidate = useThree((state) => state.invalidate);
   const controls = useRef<OrbitControlsImpl>(null);
+  const keyboardMove = useKeyboardMove();
+  const followView = useFollowView(characterMotion);
   const previousMode = useRef(cameraMode);
   const transitioning = useRef(false);
   const transitionElapsed = useRef(0);
-  const followHeading = useRef<number | null>(null);
   const view = useMemo(
     () => ({
       transitionPosition: camera.position.clone(),
@@ -40,6 +36,8 @@ function CameraControls({
     }),
     [camera],
   );
+
+  useCameraReset({ controls, view, transitioning, transitionElapsed });
 
   useEffect(() => {
     if (previousMode.current === cameraMode) return;
@@ -67,40 +65,29 @@ function CameraControls({
 
   useFrame((state, delta) => {
     if (document.hidden) return;
-    if (cameraMode === "builder" && !transitioning.current) return;
+    if (cameraMode === "builder" && !transitioning.current) {
+      if (
+        controls.current &&
+        keyboardMove.step(Math.min(delta, 0.05), camera, controls.current)
+      ) {
+        state.invalidate();
+      }
+      return;
+    }
+    keyboardMove.stop();
     if (cameraMode === "builder") {
-      followHeading.current = null;
+      followView.reset();
       view.destination.copy(view.builderPosition);
       view.destinationTarget.copy(view.builderTarget);
-    } else {
-      const { world, characterPose: pose } = useWorldStore.getState();
-      if (!pose || !world.character) return;
-      const tile = world.tiles[coordinateKey(pose.coordinate)];
-      const road = tile && getTileDefinition(tile.tileId);
-      if (road?.kind !== "road") return;
-      const motion = characterMotion.current;
-      const heading = motion?.heading ?? pose.heading;
-      if (followHeading.current === null) followHeading.current = heading;
-      const difference = heading - followHeading.current;
-      followHeading.current +=
-        Math.atan2(Math.sin(difference), Math.cos(difference)) *
-        (1 - Math.exp(-CAMERA_TURN_RESPONSE * Math.min(delta, 0.05)));
-      const forwardX = Math.sin(followHeading.current);
-      const forwardZ = Math.cos(followHeading.current);
-      const [x, z] = pose.position;
-      const ground = road.modelOffsetY + CHARACTER_ROAD_SURFACE_HEIGHT;
-      if (cameraMode === "first-person") {
-        const height = ground + EYE_HEIGHT + (motion?.hopHeight ?? 0);
-        view.destination.set(x, height, z);
-        view.destinationTarget.set(x + forwardX, height, z + forwardZ);
-      } else {
-        view.destination.set(
-          x - forwardX * FOLLOW_DISTANCE,
-          ground + FOLLOW_HEIGHT,
-          z - forwardZ * FOLLOW_DISTANCE,
-        );
-        view.destinationTarget.set(x, ground + EYE_HEIGHT, z);
-      }
+    } else if (
+      !followView.update(
+        cameraMode,
+        delta,
+        view.destination,
+        view.destinationTarget,
+      )
+    ) {
+      return;
     }
     if (transitioning.current) {
       transitionElapsed.current += Math.min(delta, 0.05);
@@ -146,6 +133,7 @@ function CameraControls({
       ref={controls}
       enabled={cameraMode === "builder"}
       enableDamping
+      screenSpacePanning={false}
       makeDefault
       maxDistance={32}
       maxPolarAngle={Math.PI / 2.15}
