@@ -1,10 +1,10 @@
-import { Earth, PersonStanding, ScanEye, type LucideIcon } from "lucide-react";
+import { Binoculars, Earth, ScanEye, type LucideIcon } from "lucide-react";
 import { useWorldStore } from "../../stores";
 import type { CameraMode } from "../../types";
 
 const VIEWS = [
   { id: "builder", label: "世界", Icon: Earth },
-  { id: "third-person", label: "第三人稱", Icon: PersonStanding },
+  { id: "third-person", label: "第三人稱", Icon: Binoculars },
   { id: "first-person", label: "第一人稱", Icon: ScanEye },
 ] as const satisfies readonly {
   id: CameraMode;
@@ -33,8 +33,8 @@ function CameraViewControls() {
               onClick={() => setCameraMode(id)}
               className={`flex h-10 items-center gap-1.5 rounded-lg px-3 text-[13px] font-medium whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:opacity-40 md:px-3.5 ${
                 cameraMode === id
-                  ? "bg-primary text-background"
-                  : "text-muted enabled:hover:text-foreground enabled:hover:bg-white/7"
+                  ? "bg-primary text-on-primary"
+                  : "text-muted enabled:hover:text-foreground enabled:hover:bg-hover"
               }`}
             >
               <Icon className="size-4" />

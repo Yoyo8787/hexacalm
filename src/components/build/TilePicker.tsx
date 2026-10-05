@@ -74,7 +74,7 @@ function TilePicker() {
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-1.5 px-3.5 pt-3 pb-2">
       {/* Positioned against the Dock, so it spans the Dock's top edge. */}
-      <span className="absolute inset-x-4 -top-px h-0.75 overflow-hidden rounded-xs bg-white/8">
+      <span className="bg-line absolute inset-x-4 -top-px h-0.75 overflow-hidden rounded-xs">
         <span
           className={`absolute inset-y-0 left-0 transition-[width] ${capacity.bar}`}
           style={{
@@ -111,7 +111,7 @@ function TilePicker() {
             <div className="to-surface/95 pointer-events-none absolute inset-y-0 right-0 flex w-18 items-center justify-end bg-linear-to-r from-transparent to-60%">
               <button
                 aria-label="捲動 Tile 列表"
-                className="pointer-events-auto grid size-7 place-items-center rounded-full bg-white/10 transition-colors hover:bg-white/16"
+                className="bg-foreground/10 hover:bg-foreground/16 pointer-events-auto grid size-7 place-items-center rounded-full transition-colors"
                 onClick={() =>
                   list.current?.scrollBy({
                     left: list.current.clientWidth,

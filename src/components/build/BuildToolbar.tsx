@@ -18,8 +18,8 @@ function BuildToolbar() {
         aria-pressed={rotating}
         className={`flex size-12 flex-col items-center justify-center gap-0.75 rounded-lg text-[10px] font-medium transition-colors ${
           rotating
-            ? "bg-primary text-background"
-            : "text-muted hover:text-foreground hover:bg-white/7"
+            ? "bg-primary text-on-primary"
+            : "text-muted hover:text-foreground hover:bg-hover"
         }`}
         onClick={() => selectTile(null)}
         type="button"
@@ -32,8 +32,8 @@ function BuildToolbar() {
         aria-pressed={removeMode}
         className={`flex size-12 flex-col items-center justify-center gap-0.75 rounded-lg text-[10px] font-medium transition-colors ${
           removeMode
-            ? "bg-danger text-background"
-            : "text-muted hover:text-foreground hover:bg-white/7"
+            ? "bg-danger text-on-primary"
+            : "text-muted hover:text-foreground hover:bg-hover"
         }`}
         onClick={toggleRemoveMode}
         type="button"
@@ -41,10 +41,10 @@ function BuildToolbar() {
         <Trash2 className="size-4" />
         刪除
       </button>
-      <span className="mx-2 my-0.75 h-px bg-white/8" />
+      <span className="bg-line mx-2 my-0.75 h-px" />
       <button
         aria-label="復原"
-        className="disabled:text-muted grid h-10 w-12 place-items-center rounded-lg transition-colors enabled:hover:bg-white/7 disabled:cursor-not-allowed disabled:opacity-40"
+        className="disabled:text-muted enabled:hover:bg-hover grid h-10 w-12 place-items-center rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-40"
         disabled={!canUndo}
         onClick={undo}
         type="button"
@@ -53,7 +53,7 @@ function BuildToolbar() {
       </button>
       <button
         aria-label="重做"
-        className="disabled:text-muted grid h-10 w-12 place-items-center rounded-lg transition-colors enabled:hover:bg-white/7 disabled:cursor-not-allowed disabled:opacity-40"
+        className="disabled:text-muted enabled:hover:bg-hover grid h-10 w-12 place-items-center rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-40"
         disabled={!canRedo}
         onClick={redo}
         type="button"

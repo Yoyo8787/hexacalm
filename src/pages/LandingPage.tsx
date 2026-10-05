@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
   BookOpen,
@@ -7,6 +8,7 @@ import {
   Hammer,
   Sparkles,
 } from "lucide-react";
+import AmbienceControl from "../components/common/AmbienceControl";
 
 const externalLinks = [
   {
@@ -34,10 +36,21 @@ function LandingPage({
   onBuildWorld,
   onContinue,
 }: LandingPageProps) {
+  const [ambienceOpen, setAmbienceOpen] = useState(false);
+
+  useEffect(() => {
+    if (!ambienceOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setAmbienceOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [ambienceOpen]);
+
   return (
     <main className="bg-background text-foreground relative isolate min-h-svh overflow-hidden">
       <div className="mx-auto flex min-h-svh w-full max-w-6xl flex-col px-6 py-6 sm:px-10 lg:px-12">
-        <header className="flex items-center justify-between border-b border-white/10 pb-5">
+        <header className="border-line relative z-20 flex items-center justify-between border-b pb-5">
           <a
             className="text-foreground flex items-center gap-2 text-sm font-semibold tracking-[0.18em]"
             href="#top"
@@ -47,9 +60,15 @@ function LandingPage({
             </span>
             HEXACALM
           </a>
-          <span className="text-muted text-xs font-medium tracking-[0.14em]">
-            3D 聲景建造器
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-muted hidden text-xs font-medium tracking-[0.14em] sm:inline">
+              3D 聲景建造器
+            </span>
+            <AmbienceControl
+              menuOpen={ambienceOpen}
+              onMenuOpenChange={setAmbienceOpen}
+            />
+          </div>
         </header>
 
         <section
@@ -82,7 +101,7 @@ function LandingPage({
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             {canContinue && (
               <button
-                className="bg-primary text-background inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-5 text-base font-semibold transition-colors hover:brightness-110"
+                className="bg-primary text-on-primary inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-5 text-base font-semibold transition-colors hover:brightness-110"
                 onClick={onContinue}
                 type="button"
               >
@@ -92,7 +111,7 @@ function LandingPage({
             )}
             <button
               aria-label="隨機生成，功能即將推出"
-              className="bg-primary text-background inline-flex min-h-12 cursor-not-allowed items-center justify-center gap-2 rounded-md px-5 text-base font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70"
+              className="bg-primary text-on-primary inline-flex min-h-12 cursor-not-allowed items-center justify-center gap-2 rounded-md px-5 text-base font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70"
               disabled
               type="button"
             >
@@ -114,10 +133,10 @@ function LandingPage({
           </p>
         </section>
 
-        <footer className="grid gap-3 border-t border-white/10 pt-6 sm:grid-cols-2">
+        <footer className="border-line grid gap-3 border-t pt-6 sm:grid-cols-2">
           {externalLinks.map(({ href, label, description, icon: Icon }) => (
             <a
-              className="group bg-surface/80 hover:border-primary/50 hover:bg-surface-hover focus-visible:outline-primary flex min-h-20 items-center justify-between rounded-md border border-white/10 px-5 py-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="group bg-surface/80 hover:border-primary/50 hover:bg-surface-hover focus-visible:outline-primary border-line flex min-h-20 items-center justify-between rounded-md border px-5 py-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
               href={href}
               key={label}
               rel="noreferrer"

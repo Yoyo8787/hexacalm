@@ -72,6 +72,8 @@ function ModelFallback() {
   return (
     <mesh>
       <cylinderGeometry args={[HEX_RADIUS, HEX_RADIUS, 0.1, 6]} />
+      {/* Only shown when a model fails to load; Three.js cannot read CSS
+          tokens, and a neutral slate stays visible in both day and night. */}
       <meshStandardMaterial color="#31443f" />
     </mesh>
   );

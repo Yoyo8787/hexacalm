@@ -8,6 +8,7 @@ import EmptyTile from "../tile/EmptyTile";
 import TileModel from "../tile/TileModel";
 import CameraControls from "./CameraControls";
 import HoverHighlight from "./HoverHighlight";
+import SceneAtmosphere from "./SceneAtmosphere";
 import type { CharacterViewMotion } from "../../types";
 
 function WorldScene() {
@@ -23,10 +24,7 @@ function WorldScene() {
 
   return (
     <>
-      <color args={["#101312"]} attach="background" />
-      <fog args={["#101312", 18, 42]} attach="fog" />
-      <ambientLight color="#91a8a2" intensity={2} />
-      <directionalLight color="#ffe5bd" intensity={3.5} position={[8, 20, 7]} />
+      <SceneAtmosphere />
 
       {tiles.map((tile) => (
         <TileModel
@@ -45,6 +43,7 @@ function WorldScene() {
             onActivate={applyTileAction}
           />
         ))}
+
       <HoverHighlight />
 
       <CharacterModel

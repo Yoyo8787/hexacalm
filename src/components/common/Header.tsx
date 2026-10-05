@@ -20,7 +20,7 @@ function Header({ children, mode, onBack, onModeChange }: HeaderProps) {
       <div className="panel pointer-events-auto flex items-center gap-2 justify-self-start rounded-xl p-1 sm:pr-3.5">
         <button
           aria-label="返回首頁"
-          className="text-muted hover:text-foreground grid size-9 place-items-center rounded-lg transition-colors hover:bg-white/7"
+          className="text-muted hover:text-foreground hover:bg-hover grid size-9 place-items-center rounded-lg transition-colors"
           onClick={onBack}
           type="button"
         >
@@ -41,8 +41,8 @@ function Header({ children, mode, onBack, onModeChange }: HeaderProps) {
             aria-pressed={mode === id}
             className={`flex h-9 items-center gap-2 rounded-lg px-2.5 text-sm font-medium transition-colors sm:px-3.5 ${
               mode === id
-                ? "bg-primary text-background"
-                : "text-muted hover:text-foreground hover:bg-white/7"
+                ? "bg-primary text-on-primary"
+                : "text-muted hover:text-foreground hover:bg-hover"
             }`}
             key={id}
             onClick={() => onModeChange(id)}

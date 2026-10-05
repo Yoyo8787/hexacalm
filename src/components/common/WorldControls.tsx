@@ -56,7 +56,7 @@ function WorldControls({
     >
       <button
         aria-label={playing ? "暫停" : "播放"}
-        className="grid size-9 place-items-center rounded-lg transition-colors hover:bg-white/7"
+        className="hover:bg-hover grid size-9 place-items-center rounded-lg transition-colors"
         onClick={() => onPlayingChange(!playing)}
         type="button"
       >
@@ -66,8 +66,8 @@ function WorldControls({
         aria-label="聲音設定"
         aria-expanded={menuOpen}
         aria-controls={menuId}
-        className={`flex h-9 items-center gap-2 rounded-lg px-2.5 transition-colors hover:bg-white/7 ${
-          menuOpen ? "bg-white/7" : ""
+        className={`hover:bg-hover flex h-9 items-center gap-2 rounded-lg px-2.5 transition-colors ${
+          menuOpen ? "bg-hover" : ""
         }`}
         onClick={() => onMenuOpenChange(!menuOpen)}
         type="button"
@@ -87,7 +87,7 @@ function WorldControls({
             <button
               aria-label={muted ? "取消靜音" : "靜音"}
               aria-pressed={muted}
-              className="text-muted hover:text-foreground grid size-8 shrink-0 place-items-center rounded-lg transition-colors hover:bg-white/7"
+              className="text-muted hover:text-foreground hover:bg-hover grid size-8 shrink-0 place-items-center rounded-lg transition-colors"
               onClick={() => onMutedChange(!muted)}
               type="button"
             >
@@ -104,7 +104,7 @@ function WorldControls({
               value={volume}
             />
           </div>
-          <div className="mt-3 border-t border-white/8 pt-3">
+          <div className="border-line mt-3 border-t pt-3">
             <h2 className="text-muted mb-2 text-xs font-semibold">寵物聲音</h2>
             <label className="flex cursor-pointer items-center justify-between gap-4 text-sm">
               叫聲

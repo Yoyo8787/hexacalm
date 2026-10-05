@@ -44,7 +44,7 @@ function TileCategoryTabs({
             className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-[13px] font-medium transition-colors select-none ${
               category === id
                 ? "bg-primary/16 text-primary"
-                : "text-muted hover:text-foreground hover:bg-white/7"
+                : "text-muted hover:text-foreground hover:bg-hover"
             }`}
             key={id}
             onClick={() => onCategoryChange(id)}

@@ -13,6 +13,7 @@ import type {
   HexCoordinate,
   HexRotation,
   PlacedTile,
+  TimeMode,
   WorldData,
   WorldMode,
 } from "../types";
@@ -48,6 +49,7 @@ interface WorldStore {
   setCharacterSpeed: (speed: number) => void;
   advanceCharacter: (delta: number) => void;
   setMode: (mode: WorldMode) => void;
+  setTimeMode: (timeMode: TimeMode) => void;
   setCameraMode: (mode: CameraMode) => void;
   resetCamera: () => void;
   setCameraStatus: (status: {
@@ -66,6 +68,7 @@ export function createEmptyWorld(): WorldData {
   return {
     version: WORLD_SCHEMA_VERSION,
     mode: "build",
+    timeMode: "auto",
     tiles: {},
     character: null,
   };
@@ -211,8 +214,9 @@ export const useWorldStore = create<WorldStore>((set) => ({
   hydrated: false,
 
   createBlankWorld: () =>
-    set({
-      world: createEmptyWorld(),
+    set((state) => ({
+      // The time mode is an ambience preference, so a new world keeps it.
+      world: { ...createEmptyWorld(), timeMode: state.world.timeMode },
       cameraMode: "builder",
       cameraDeviated: false,
       cameraResetting: false,
@@ -223,7 +227,7 @@ export const useWorldStore = create<WorldStore>((set) => ({
       past: [],
       future: [],
       hydrated: true,
-    }),
+    })),
 
   hydrateWorld: (world) =>
     set({
@@ -324,6 +328,13 @@ export const useWorldStore = create<WorldStore>((set) => ({
       selectedTileId: mode === "relax" ? null : state.selectedTileId,
       removeMode: mode === "relax" ? false : state.removeMode,
     })),
+
+  setTimeMode: (timeMode) =>
+    set((state) =>
+      state.world.timeMode === timeMode
+        ? state
+        : { world: { ...state.world, timeMode } },
+    ),
 
   setCameraMode: (cameraMode) =>
     set((state) =>

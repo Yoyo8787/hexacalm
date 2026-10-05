@@ -22,8 +22,8 @@ function TileItem({ disabled, selected, tile, onSelect }: TileItemProps) {
         <span
           className={`hex-clip absolute inset-0.5 transition-colors ${
             selected
-              ? "bg-[#1d2a28]"
-              : "bg-white/4 group-enabled:group-hover:bg-white/8"
+              ? "bg-secondary"
+              : "bg-hover group-enabled:group-hover:bg-line"
           }`}
         />
         <img

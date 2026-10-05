@@ -24,7 +24,7 @@ function SleepTimer() {
           running ? `睡眠倒數，剩餘 ${remainingMinutes} 分鐘` : "睡眠倒數"
         }
         aria-haspopup="dialog"
-        className="panel flex h-11 items-center gap-2 rounded-xl px-3 transition-colors hover:bg-white/7"
+        className="panel hover:bg-hover flex h-11 items-center gap-2 rounded-xl px-3 transition-colors"
         onClick={() => {
           setMinutes(String(remainingMinutes ?? 30));
           dialog.current?.showModal();
@@ -38,10 +38,12 @@ function SleepTimer() {
           </span>
         )}
       </button>
+      {/* The black backdrop and shadow-2xl dim the scene in both day and
+          night themes, so they stay fixed instead of using color tokens. */}
       <dialog
         ref={dialog}
         aria-labelledby={titleId}
-        className="bg-surface text-foreground fixed inset-0 m-auto max-h-[calc(100svh-2rem)] w-[min(440px,calc(100%-2rem))] overflow-auto rounded-2xl border border-white/10 p-6 shadow-2xl backdrop:bg-black/60"
+        className="bg-surface text-foreground border-line fixed inset-0 m-auto max-h-[calc(100svh-2rem)] w-[min(440px,calc(100%-2rem))] overflow-auto rounded-2xl border p-6 shadow-2xl backdrop:bg-black/60"
         onKeyDown={(event) => event.stopPropagation()}
         onClick={(event) => {
           if (event.target !== event.currentTarget) return;
@@ -61,7 +63,7 @@ function SleepTimer() {
           </h2>
           <button
             aria-label="關閉睡眠倒數設定"
-            className="text-muted hover:text-foreground grid size-9 place-items-center rounded-lg hover:bg-white/7"
+            className="text-muted hover:text-foreground hover:bg-hover grid size-9 place-items-center rounded-lg"
             onClick={() => dialog.current?.close()}
             type="button"
           >
@@ -97,7 +99,7 @@ function SleepTimer() {
             id={inputId}
             aria-invalid={!valid}
             aria-describedby={valid ? undefined : errorId}
-            className="bg-background focus:border-primary mt-2 w-full rounded-lg border border-white/15 px-4 py-3 outline-none"
+            className="bg-background focus:border-primary border-line mt-2 w-full rounded-lg border px-4 py-3 outline-none"
             type="number"
             inputMode="numeric"
             min="1"
@@ -115,7 +117,7 @@ function SleepTimer() {
           <div className="mt-6 flex gap-3">
             {running && (
               <button
-                className="flex-1 rounded-lg border border-white/15 px-4 py-3 text-sm hover:bg-white/7"
+                className="border-line hover:bg-hover flex-1 rounded-lg border px-4 py-3 text-sm"
                 type="button"
                 onClick={() => {
                   cancel();
@@ -126,7 +128,7 @@ function SleepTimer() {
               </button>
             )}
             <button
-              className="bg-primary text-background flex-1 rounded-lg px-4 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+              className="bg-primary text-on-primary flex-1 rounded-lg px-4 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
               disabled={!valid}
               type="submit"
             >

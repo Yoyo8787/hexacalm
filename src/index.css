@@ -2,30 +2,69 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #101312;
-  --color-surface: #18201e;
-  --color-surface-hover: #22302c;
-  --color-foreground: #eef4f1;
-  --color-muted: #aab8b2;
-  --color-primary: #81c7d4;
-  --color-secondary: #23665c;
-  --color-accent: #e8b86d;
-  --color-popover: #1b2422;
-  --color-danger: #f87171;
-  --color-warning: #e0b25c;
+  --color-background: #e6ebe4;
+  --color-surface: #fafaf5;
+  --color-surface-hover: #eef1ea;
+  --color-popover: #fbfbf7;
+  --color-foreground: #23302b;
+  --color-muted: #5c6b64;
+  --color-primary: #357d6b;
+  --color-on-primary: #f8f8f3;
+  --color-secondary: #d5e5dc;
+  --color-accent: #c9844a;
+  --color-accent-text: #8a5527;
+  --color-hover: rgb(35 48 43 / 0.06);
+  --color-line: rgb(35 48 43 / 0.1);
+  --color-danger: #c2473a;
+  --color-warning: #a87420;
+  --shadow-panel: 0 12px 32px rgb(60 70 60 / 0.12);
+}
+
+html[data-time="night"] {
+  --color-background: #121c2a;
+  --color-surface: #16202c;
+  --color-surface-hover: #1f2c3a;
+  --color-popover: #1a2532;
+  --color-foreground: #e8eef2;
+  --color-muted: #9aa9b5;
+  --color-primary: #9ccfc0;
+  --color-on-primary: #0f1824;
+  --color-secondary: #24423f;
+  --color-accent: #f0c27a;
+  --color-accent-text: #f0c27a;
+  --color-hover: rgb(220 232 255 / 0.07);
+  --color-line: rgb(220 232 255 / 0.08);
+  --color-danger: #f08a80;
+  --color-warning: #e8c070;
+  --shadow-panel: 0 12px 32px rgb(4 8 16 / 0.4);
+  color-scheme: dark;
+}
+
+/* UI colors fade along with the scene when the time of day switches. */
+html.time-transition * {
+  transition:
+    background-color 0.8s,
+    color 0.8s,
+    border-color 0.8s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.time-transition * {
+    transition-duration: 0.3s;
+  }
 }
 
 @utility panel {
   background-color: color-mix(in srgb, var(--color-surface) 72%, transparent);
   backdrop-filter: blur(16px);
-  border: 1px solid rgb(255 255 255 / 0.08);
-  box-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+  border: 1px solid var(--color-line);
+  box-shadow: var(--shadow-panel);
 }
 
 @utility popover {
   background-color: var(--color-popover);
-  border: 1px solid rgb(255 255 255 / 0.08);
-  box-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+  border: 1px solid var(--color-line);
+  box-shadow: var(--shadow-panel);
 }
 
 @utility hex-clip {
@@ -43,7 +82,7 @@
       BlinkMacSystemFont,
       "Segoe UI",
       sans-serif;
-    color-scheme: dark;
+    color-scheme: light;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;

@@ -5,6 +5,7 @@ import CharacterControls from "../components/character/CharacterControls";
 import BuildToolbar from "../components/build/BuildToolbar";
 import CursorHint from "../components/build/CursorHint";
 import TilePicker from "../components/build/TilePicker";
+import AmbienceControl from "../components/common/AmbienceControl";
 import ErrorBoundary from "../components/common/ErrorBoundary";
 import Header from "../components/common/Header";
 import CameraViewControls from "../components/world/CameraViewControls";
@@ -17,7 +18,7 @@ import { useWorldStore } from "../stores";
 const DOCK_BOTTOM = 16;
 const DOCK_PILL_GAP = 12;
 
-type WorldMenu = "audio" | "pet";
+type WorldMenu = "ambience" | "audio" | "pet";
 
 interface WorldPageProps {
   onBack: () => void;
@@ -84,6 +85,10 @@ function WorldPage({ onBack }: WorldPageProps) {
     <main className="bg-background text-foreground relative h-svh overflow-hidden">
       <Header mode={mode} onBack={onBack} onModeChange={setMode}>
         <div className="flex items-center gap-2">
+          <AmbienceControl
+            menuOpen={openMenu === "ambience"}
+            onMenuOpenChange={(open) => setOpenMenu(open ? "ambience" : null)}
+          />
           <SleepTimer />
           <AudioController
             menuOpen={openMenu === "audio"}
@@ -109,7 +114,7 @@ function WorldPage({ onBack }: WorldPageProps) {
             onMenuOpenChange={(open) => setOpenMenu(open ? "pet" : null)}
           />
           <span
-            className={`w-px shrink-0 bg-white/8 ${
+            className={`bg-line w-px shrink-0 ${
               mode === "build" ? "my-3" : "mx-1 h-7"
             }`}
           />

@@ -59,8 +59,8 @@ function CharacterControls({
       <button
         aria-expanded={menuOpen}
         aria-label={character ? "更換寵物" : "加入寵物"}
-        className={`flex h-10 items-center gap-2 rounded-lg pl-1 text-sm font-medium transition-colors hover:bg-white/7 ${
-          layout === "inline" || menuOpen ? "bg-white/7" : ""
+        className={`hover:bg-hover flex h-10 items-center gap-2 rounded-lg pl-1 text-sm font-medium transition-colors ${
+          layout === "inline" || menuOpen ? "bg-hover" : ""
         } ${layout === "stacked" ? "pr-1 md:w-full md:pr-2" : "pr-2"}`}
         onClick={() => onMenuOpenChange(!menuOpen)}
         type="button"
@@ -105,7 +105,7 @@ function CharacterControls({
             <button
               key={option.id}
               aria-pressed={character?.id === option.id}
-              className={`flex w-full items-center gap-2 rounded-lg px-2 py-1 text-sm transition-colors enabled:hover:bg-white/7 disabled:cursor-not-allowed disabled:opacity-40 ${
+              className={`enabled:hover:bg-hover flex w-full items-center gap-2 rounded-lg px-2 py-1 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
                 character?.id === option.id
                   ? "bg-primary/16 text-primary font-semibold"
                   : ""
@@ -132,7 +132,7 @@ function CharacterControls({
           )}
           {character && (
             <button
-              className="text-danger hover:bg-danger/10 mt-2 w-full rounded-lg border-t border-white/8 px-2 py-2 text-left text-sm transition-colors"
+              className="text-danger hover:bg-danger/10 border-line mt-2 w-full rounded-lg border-t px-2 py-2 text-left text-sm transition-colors"
               onClick={() => {
                 removeCharacter();
                 onMenuOpenChange(false);
@@ -154,7 +154,7 @@ function CharacterControls({
       className={`grid size-10 place-items-center rounded-lg transition-colors ${
         character.walkingEnabled
           ? "bg-primary/16 text-primary"
-          : "text-muted hover:text-foreground hover:bg-white/7"
+          : "text-muted hover:text-foreground hover:bg-hover"
       }`}
       onClick={() => setWalking(!character.walkingEnabled)}
       type="button"

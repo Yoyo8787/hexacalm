@@ -1,5 +1,9 @@
 export type WorldMode = "build" | "relax";
 
+export type TimeMode = "auto" | "day" | "night";
+
+export type TimeOfDay = "day" | "night";
+
 export type CameraMode = "builder" | "third-person" | "first-person";
 
 export interface CharacterViewMotion {
@@ -69,6 +73,7 @@ export interface PlacedTile extends HexCoordinate {
 export interface WorldData {
   version: number;
   mode: WorldMode;
+  timeMode: TimeMode;
   tiles: Record<string, PlacedTile>;
   character: SavedCharacter | null;
 }

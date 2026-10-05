@@ -1,5 +1,6 @@
 import { lazy, Suspense, useState } from "react";
 import { useWorldPersistence } from "./hooks";
+import { useTimeTheme } from "./hooks/useTimeOfDay";
 import LandingPage from "./pages/LandingPage";
 import { useWorldStore } from "./stores";
 
@@ -16,6 +17,7 @@ function App() {
   );
 
   useWorldPersistence();
+  useTimeTheme();
 
   if (page === "world") {
     return (

@@ -69,6 +69,9 @@ function isSerializedState(value: unknown): value is SerializedState {
   return (
     stored.version === WORLD_SCHEMA_VERSION &&
     (stored.mode === "build" || stored.mode === "relax") &&
+    (stored.timeMode === "auto" ||
+      stored.timeMode === "day" ||
+      stored.timeMode === "night") &&
     !!stored.tiles &&
     typeof stored.tiles === "object" &&
     Object.values(stored.tiles).every(isPlacedTile) &&
