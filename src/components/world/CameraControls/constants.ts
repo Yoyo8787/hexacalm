@@ -1,5 +1,5 @@
-export const FOLLOW_DISTANCE = 1.8;
-export const FOLLOW_HEIGHT = 1;
+export const FOLLOW_DISTANCE = 3.0;
+export const FOLLOW_HEIGHT = 2;
 export const EYE_HEIGHT = 0.18;
 export const TRANSITION_SECONDS = 0.65;
 export const CAMERA_TURN_RESPONSE = 4;
