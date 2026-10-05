@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import AudioController from "../components/audio/AudioController";
+import SleepTimer from "../components/audio/SleepTimer";
 import CharacterControls from "../components/character/CharacterControls";
 import BuildToolbar from "../components/build/BuildToolbar";
 import CursorHint from "../components/build/CursorHint";
@@ -82,10 +83,13 @@ function WorldPage({ onBack }: WorldPageProps) {
   return (
     <main className="bg-background text-foreground relative h-svh overflow-hidden">
       <Header mode={mode} onBack={onBack} onModeChange={setMode}>
-        <AudioController
-          menuOpen={openMenu === "audio"}
-          onMenuOpenChange={(open) => setOpenMenu(open ? "audio" : null)}
-        />
+        <div className="flex items-center gap-2">
+          <SleepTimer />
+          <AudioController
+            menuOpen={openMenu === "audio"}
+            onMenuOpenChange={(open) => setOpenMenu(open ? "audio" : null)}
+          />
+        </div>
       </Header>
       <section className="relative h-svh">
         <ErrorBoundary>

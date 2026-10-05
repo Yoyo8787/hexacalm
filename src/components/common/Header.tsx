@@ -16,7 +16,7 @@ const MODES = [
 
 function Header({ children, mode, onBack, onModeChange }: HeaderProps) {
   return (
-    <header className="pointer-events-none absolute inset-x-4 top-4 z-20 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+    <header className="pointer-events-none absolute inset-x-4 top-4 z-20 grid grid-cols-[1fr_auto] items-center gap-3 sm:grid-cols-[1fr_auto_1fr]">
       <div className="panel pointer-events-auto flex items-center gap-2 justify-self-start rounded-xl p-1 sm:pr-3.5">
         <button
           aria-label="返回首頁"
@@ -54,7 +54,9 @@ function Header({ children, mode, onBack, onModeChange }: HeaderProps) {
         ))}
       </div>
 
-      <div className="pointer-events-auto justify-self-end">{children}</div>
+      <div className="pointer-events-auto col-span-2 justify-self-end sm:col-span-1">
+        {children}
+      </div>
     </header>
   );
 }

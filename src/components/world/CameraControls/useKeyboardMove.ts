@@ -44,6 +44,11 @@ export function useKeyboardMove() {
       // Moves camera and orbit target together; returns true while moving.
       step(delta: number, camera: Camera, orbit: OrbitControlsImpl) {
         const { velocity, desired, forward, right } = motion;
+        if (document.querySelector("dialog:modal")) {
+          pressed.current.clear();
+          velocity.set(0, 0, 0);
+          return false;
+        }
         let inputX = 0;
         let inputZ = 0;
         for (const code of pressed.current) {
