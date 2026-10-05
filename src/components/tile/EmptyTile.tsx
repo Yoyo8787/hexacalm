@@ -1,6 +1,5 @@
-import { useState } from "react";
 import type { ThreeEvent } from "@react-three/fiber";
-import { Edges } from "@react-three/drei";
+import { useWorldStore } from "../../stores";
 import type { HexCoordinate } from "../../types";
 import { hexToWorld } from "../../utils/hex";
 import { HEX_RADIUS } from "./constants";
@@ -11,7 +10,9 @@ interface EmptyTileProps {
 }
 
 function EmptyTile({ coordinate, onActivate }: EmptyTileProps) {
-  const [hovered, setHovered] = useState(false);
+  const setHoveredCoordinate = useWorldStore(
+    (state) => state.setHoveredCoordinate,
+  );
   const position = hexToWorld(coordinate);
 
   function handleClick(event: ThreeEvent<MouseEvent>) {
@@ -22,17 +23,15 @@ function EmptyTile({ coordinate, onActivate }: EmptyTileProps) {
   return (
     <mesh
       onClick={handleClick}
-      onPointerOut={() => setHovered(false)}
+      onPointerOut={() => setHoveredCoordinate(coordinate, false)}
       onPointerOver={(event) => {
         event.stopPropagation();
-        setHovered(true);
+        setHoveredCoordinate(coordinate, true);
       }}
       position={[position[0], 0.05, position[2]]}
     >
       <cylinderGeometry args={[HEX_RADIUS, HEX_RADIUS, 0.1, 6]} />
       <meshBasicMaterial depthWrite={false} opacity={0} transparent />
-
-      {hovered && <Edges color="#b9f4ff" threshold={15} />}
     </mesh>
   );
 }

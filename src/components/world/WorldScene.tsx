@@ -7,6 +7,7 @@ import { getAvailableCoordinates } from "../../utils/hex";
 import EmptyTile from "../tile/EmptyTile";
 import TileModel from "../tile/TileModel";
 import CameraControls from "./CameraControls";
+import HoverHighlight from "./HoverHighlight";
 import type { CharacterViewMotion } from "../../types";
 
 function WorldScene() {
@@ -44,6 +45,7 @@ function WorldScene() {
             onActivate={applyTileAction}
           />
         ))}
+      <HoverHighlight />
 
       <CharacterModel
         onLand={ambientAudioEngine.playFootstep}

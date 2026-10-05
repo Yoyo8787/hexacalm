@@ -7,6 +7,7 @@ import { useWorldStore } from "../../../stores";
 import type { CharacterViewMotion } from "../../../types";
 import { TRANSITION_SECONDS } from "./constants";
 import { useCameraReset } from "./useCameraReset";
+import { useDefaultViewStatus } from "./useDefaultViewStatus";
 import { useFollowView } from "./useFollowView";
 import { useKeyboardMove } from "./useKeyboardMove";
 
@@ -21,6 +22,7 @@ function CameraControls({
   const controls = useRef<OrbitControlsImpl>(null);
   const keyboardMove = useKeyboardMove();
   const followView = useFollowView(characterMotion);
+  const defaultView = useDefaultViewStatus();
   const previousMode = useRef(cameraMode);
   const transitioning = useRef(false);
   const transitionElapsed = useRef(0);
@@ -66,11 +68,10 @@ function CameraControls({
   useFrame((state, delta) => {
     if (document.hidden) return;
     if (cameraMode === "builder" && !transitioning.current) {
-      if (
-        controls.current &&
-        keyboardMove.step(Math.min(delta, 0.05), camera, controls.current)
-      ) {
-        state.invalidate();
+      if (controls.current) {
+        if (keyboardMove.step(Math.min(delta, 0.05), camera, controls.current))
+          state.invalidate();
+        defaultView.update(camera, controls.current.target);
       }
       return;
     }
@@ -110,6 +111,7 @@ function CameraControls({
         transitioning.current = false;
         camera.position.copy(view.destination);
         view.target.copy(view.destinationTarget);
+        useWorldStore.getState().setCameraStatus({ resetting: false });
       }
     } else {
       camera.position.copy(view.destination);

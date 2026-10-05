@@ -81,6 +81,9 @@ function TileModel({ tile, onActivate }: TileModelProps) {
   const definition = getTileDefinition(tile.tileId);
   const [hovered, setHovered] = useState(false);
   const mode = useWorldStore((state) => state.world.mode);
+  const setHoveredCoordinate = useWorldStore(
+    (state) => state.setHoveredCoordinate,
+  );
   const position = hexToWorld(tile);
 
   function handleClick(event: ThreeEvent<MouseEvent>) {
@@ -100,10 +103,12 @@ function TileModel({ tile, onActivate }: TileModelProps) {
       onPointerOver={(e) => {
         e.stopPropagation();
         setHovered(true);
+        setHoveredCoordinate(tile, true);
       }}
       onPointerOut={(e) => {
         e.stopPropagation();
         setHovered(false);
+        setHoveredCoordinate(tile, false);
       }}
     >
       <Suspense fallback={<ModelFallback />}>

@@ -10,6 +10,26 @@
   --color-primary: #81c7d4;
   --color-secondary: #23665c;
   --color-accent: #e8b86d;
+  --color-popover: #1b2422;
+  --color-danger: #f87171;
+  --color-warning: #e0b25c;
+}
+
+@utility panel {
+  background-color: color-mix(in srgb, var(--color-surface) 72%, transparent);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+}
+
+@utility popover {
+  background-color: var(--color-popover);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+}
+
+@utility hex-clip {
+  clip-path: polygon(25% 4%, 75% 4%, 100% 50%, 75% 96%, 25% 96%, 0 50%);
 }
 
 @layer base {

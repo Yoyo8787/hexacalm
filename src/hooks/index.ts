@@ -3,7 +3,9 @@ import {
   AUDIO_PERSIST_DELAY,
   DEFAULT_AUDIO_SETTINGS,
 } from "../constants/audio";
+import { WORLD_TILE_LIMIT } from "../constants/world";
 import { useAudioStore, useWorldStore } from "../stores";
+import { coordinateKey } from "../utils/hex";
 import { loadWorld, saveWorld } from "../utils/storage";
 
 export function useWorldPersistence(): void {
@@ -75,4 +77,37 @@ export function useTileSelection() {
   const selectTile = useWorldStore((state) => state.selectTile);
 
   return { selectedTileId, selectTile };
+}
+
+export type HoverAction = "rotate" | "place" | "remove" | "full";
+
+// Mirrors the build action priority for the hovered cell; null when a click
+// there would do nothing.
+export function useHoverAction(): HoverAction | null {
+  return useWorldStore((state) => {
+    const coordinate = state.hoveredCoordinate;
+    if (
+      !coordinate ||
+      state.world.mode !== "build" ||
+      state.cameraMode !== "builder"
+    ) {
+      return null;
+    }
+
+    const tile = state.world.tiles[coordinateKey(coordinate)];
+
+    if (state.removeMode) {
+      return tile ? "remove" : null;
+    }
+
+    if (state.selectedTileId) {
+      if (tile?.tileId === state.selectedTileId) return "rotate";
+      if (!tile && Object.keys(state.world.tiles).length >= WORLD_TILE_LIMIT) {
+        return "full";
+      }
+      return "place";
+    }
+
+    return tile ? "rotate" : null;
+  });
 }

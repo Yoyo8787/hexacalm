@@ -46,6 +46,7 @@ export function useCameraReset({
     transitionElapsed.current = 0;
     transitioning.current = true;
     orbit.enabled = false;
+    useWorldStore.getState().setCameraStatus({ resetting: true });
     invalidate();
   }, [
     resetCameraCounter,

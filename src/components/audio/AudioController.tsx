@@ -6,7 +6,12 @@ import { CHARACTER_MIX_UPDATE_INTERVAL } from "../../constants/audio";
 import { useAudioStore, useWorldStore } from "../../stores";
 import WorldControls from "../common/WorldControls";
 
-function AudioController() {
+interface AudioControllerProps {
+  menuOpen: boolean;
+  onMenuOpenChange: (open: boolean) => void;
+}
+
+function AudioController({ menuOpen, onMenuOpenChange }: AudioControllerProps) {
   const hydrated = useWorldStore((state) => state.hydrated);
   const characterId = useWorldStore(
     (state) => state.world.character?.id ?? null,
@@ -95,6 +100,8 @@ function AudioController() {
       callsEnabled={callsEnabled}
       onFootstepsEnabledChange={setFootstepsEnabled}
       onCallsEnabledChange={setCallsEnabled}
+      menuOpen={menuOpen}
+      onMenuOpenChange={onMenuOpenChange}
       muted={muted}
       onMutedChange={setMuted}
       onPlayingChange={setPlaying}

@@ -9,38 +9,42 @@ function BuildToolbar() {
   const selectTile = useWorldStore((state) => state.selectTile);
   const canUndo = useWorldStore((state) => state.past.length > 0);
   const canRedo = useWorldStore((state) => state.future.length > 0);
+  const rotating = !selectedTileId && !removeMode;
 
   return (
-    <div className="bg-surface/90 absolute top-4 left-4 z-10 flex gap-1 rounded-lg border border-white/10 p-2 shadow-xl backdrop-blur">
+    <div className="panel absolute top-1/2 left-4 z-10 flex -translate-y-1/2 flex-col gap-0.5 rounded-xl p-1">
       <button
         aria-label="旋轉模式"
-        className={`grid size-9 place-items-center rounded-md transition-colors ${
-          selectedTileId || removeMode
-            ? "text-primary hover:bg-surface-hover"
-            : "bg-primary text-background"
+        aria-pressed={rotating}
+        className={`flex size-12 flex-col items-center justify-center gap-0.75 rounded-lg text-[10px] font-medium transition-colors ${
+          rotating
+            ? "bg-primary text-background"
+            : "text-muted hover:text-foreground hover:bg-white/7"
         }`}
         onClick={() => selectTile(null)}
         type="button"
       >
         <Rotate3D className="size-4" />
+        旋轉
       </button>
       <button
         aria-label="刪除模式"
         aria-pressed={removeMode}
-        className={`grid size-9 place-items-center rounded-md transition-colors ${
+        className={`flex size-12 flex-col items-center justify-center gap-0.75 rounded-lg text-[10px] font-medium transition-colors ${
           removeMode
-            ? "bg-red-400 text-slate-950"
-            : "text-muted hover:bg-surface-hover hover:text-foreground"
+            ? "bg-danger text-background"
+            : "text-muted hover:text-foreground hover:bg-white/7"
         }`}
         onClick={toggleRemoveMode}
         type="button"
       >
         <Trash2 className="size-4" />
+        刪除
       </button>
-      <span className="mx-1 w-px bg-white/10" />
+      <span className="mx-2 my-0.75 h-px bg-white/8" />
       <button
         aria-label="復原"
-        className="text-muted hover:bg-surface-hover hover:text-foreground grid size-9 place-items-center rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-35"
+        className="disabled:text-muted grid h-10 w-12 place-items-center rounded-lg transition-colors enabled:hover:bg-white/7 disabled:cursor-not-allowed disabled:opacity-40"
         disabled={!canUndo}
         onClick={undo}
         type="button"
@@ -49,7 +53,7 @@ function BuildToolbar() {
       </button>
       <button
         aria-label="重做"
-        className="text-muted hover:bg-surface-hover hover:text-foreground grid size-9 place-items-center rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-35"
+        className="disabled:text-muted grid h-10 w-12 place-items-center rounded-lg transition-colors enabled:hover:bg-white/7 disabled:cursor-not-allowed disabled:opacity-40"
         disabled={!canRedo}
         onClick={redo}
         type="button"

@@ -1,6 +1,23 @@
-import { TILE_CATALOG } from "../../constants/tileCatalog";
+import {
+  House,
+  Mountain,
+  Route,
+  Sprout,
+  Trees,
+  Waves,
+  type LucideIcon,
+} from "lucide-react";
 import type { TileCategoryId } from "../../types";
 import { TILE_CATEGORY_LABELS } from "../tile/constants";
+
+const CATEGORY_ICONS: Record<TileCategoryId, LucideIcon> = {
+  ground: Sprout,
+  forest: Trees,
+  mountain: Mountain,
+  water: Waves,
+  road: Route,
+  structure: House,
+};
 
 interface TileCategoryTabsProps {
   category: TileCategoryId;
@@ -17,24 +34,24 @@ function TileCategoryTabs({
   ][];
 
   return (
-    <div className="flex gap-1 overflow-x-auto px-1 pb-2">
+    <div className="flex min-w-0 gap-0.5 overflow-x-auto">
       {categories.map(([id, label]) => {
-        const count = TILE_CATALOG.filter((tile) =>
-          tile.categories.includes(id),
-        ).length;
+        const Icon = CATEGORY_ICONS[id];
 
         return (
           <button
-            className={`shrink-0 rounded-md px-3 py-1.5 text-xs font-medium transition-colors select-none ${
+            aria-pressed={category === id}
+            className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-[13px] font-medium transition-colors select-none ${
               category === id
-                ? "bg-primary text-background"
-                : "text-muted hover:bg-surface-hover hover:text-foreground"
+                ? "bg-primary/16 text-primary"
+                : "text-muted hover:text-foreground hover:bg-white/7"
             }`}
             key={id}
             onClick={() => onCategoryChange(id)}
             type="button"
           >
-            {label} <span className="opacity-65">{count}</span>
+            <Icon className="size-3.5" />
+            {label}
           </button>
         );
       })}

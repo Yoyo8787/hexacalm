@@ -31,6 +31,9 @@ interface WorldStore {
   world: WorldData;
   cameraMode: CameraMode;
   resetCameraCounter: number;
+  cameraDeviated: boolean;
+  cameraResetting: boolean;
+  hoveredCoordinate: HexCoordinate | null;
   characterPose: CharacterPose | null;
   selectedTileId: string | null;
   removeMode: boolean;
@@ -47,6 +50,11 @@ interface WorldStore {
   setMode: (mode: WorldMode) => void;
   setCameraMode: (mode: CameraMode) => void;
   resetCamera: () => void;
+  setCameraStatus: (status: {
+    deviated?: boolean;
+    resetting?: boolean;
+  }) => void;
+  setHoveredCoordinate: (coordinate: HexCoordinate, hovered: boolean) => void;
   selectTile: (tileId: string | null) => void;
   toggleRemoveMode: () => void;
   applyTileAction: (coordinate: HexCoordinate) => void;
@@ -192,6 +200,9 @@ export const useWorldStore = create<WorldStore>((set) => ({
   world: createEmptyWorld(),
   cameraMode: "builder",
   resetCameraCounter: 0,
+  cameraDeviated: false,
+  cameraResetting: false,
+  hoveredCoordinate: null,
   characterPose: null,
   selectedTileId: null,
   removeMode: false,
@@ -203,6 +214,9 @@ export const useWorldStore = create<WorldStore>((set) => ({
     set({
       world: createEmptyWorld(),
       cameraMode: "builder",
+      cameraDeviated: false,
+      cameraResetting: false,
+      hoveredCoordinate: null,
       characterPose: null,
       selectedTileId: null,
       removeMode: false,
@@ -218,6 +232,9 @@ export const useWorldStore = create<WorldStore>((set) => ({
         null,
       ),
       cameraMode: "builder",
+      cameraDeviated: false,
+      cameraResetting: false,
+      hoveredCoordinate: null,
       selectedTileId: null,
       removeMode: false,
       past: [],
@@ -323,6 +340,26 @@ export const useWorldStore = create<WorldStore>((set) => ({
         ? { resetCameraCounter: state.resetCameraCounter + 1 }
         : state,
     ),
+
+  setCameraStatus: ({ deviated, resetting }) =>
+    set((state) =>
+      (deviated ?? state.cameraDeviated) === state.cameraDeviated &&
+      (resetting ?? state.cameraResetting) === state.cameraResetting
+        ? state
+        : {
+            cameraDeviated: deviated ?? state.cameraDeviated,
+            cameraResetting: resetting ?? state.cameraResetting,
+          },
+    ),
+
+  setHoveredCoordinate: (coordinate, hovered) =>
+    set((state) => {
+      const current = state.hoveredCoordinate;
+      const isCurrent =
+        !!current && coordinateKey(current) === coordinateKey(coordinate);
+      if (hovered) return isCurrent ? state : { hoveredCoordinate: coordinate };
+      return isCurrent ? { hoveredCoordinate: null } : state;
+    }),
 
   selectTile: (tileId) =>
     set((state) => ({
