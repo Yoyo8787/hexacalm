@@ -82,6 +82,17 @@ html.time-transition * {
 }
 
 @layer base {
+  button:enabled,
+  a[href],
+  input:is([type="checkbox"], [type="radio"], [type="range"]):enabled {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  input:disabled {
+    cursor: not-allowed;
+  }
+
   :root {
     font-family:
       "Noto Sans TC",

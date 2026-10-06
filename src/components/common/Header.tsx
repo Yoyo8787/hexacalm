@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ArrowLeft, Box, Eye, Hammer } from "lucide-react";
+import { ArrowLeft, Eye, Hammer } from "lucide-react";
 import type { WorldMode } from "../../types";
 
 interface HeaderProps {
@@ -26,9 +26,11 @@ function Header({ children, mode, onBack, onModeChange }: HeaderProps) {
         >
           <ArrowLeft className="size-4.5" />
         </button>
-        <span className="bg-primary/16 text-primary grid size-7 place-items-center rounded-[7px]">
-          <Box aria-hidden="true" className="size-3.75" />
-        </span>
+        <img
+          alt=""
+          className="size-7 object-contain"
+          src={`${import.meta.env.BASE_URL}favicon.png`}
+        />
         <span className="hidden text-[13px] font-semibold tracking-[0.18em] sm:inline">
           HEXACALM
         </span>

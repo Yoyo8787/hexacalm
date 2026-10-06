@@ -5,14 +5,24 @@ import {
   POINTER_DRAG_THRESHOLD,
 } from "../../constants/world";
 import { useWorldStore } from "../../stores";
+import { useHoverAction } from "../../hooks";
 import WorldScene from "./WorldScene";
 
+const ACTION_CURSORS = {
+  rotate: "cursor-pointer",
+  place: "cursor-crosshair",
+  remove: "cursor-pointer",
+  full: "cursor-not-allowed",
+};
+
 function WorldCanvas() {
+  const action = useHoverAction();
   // Right drag pans the camera; only a right click cancels the Tile selection.
   const rightPress = useRef<{ x: number; y: number } | null>(null);
 
   return (
     <Canvas
+      className={action ? ACTION_CURSORS[action] : "cursor-auto"}
       camera={{
         fov: 42,
         near: 0.1,

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
   BookOpen,
-  Box,
   GitFork,
   Globe2,
   Hammer,
@@ -57,9 +56,11 @@ function LandingPage({
             className="text-foreground flex items-center gap-2 text-sm font-semibold tracking-[0.18em]"
             href="#top"
           >
-            <span className="border-primary/40 bg-primary/10 text-primary grid size-8 place-items-center rounded-md border">
-              <Box aria-hidden="true" className="size-4" />
-            </span>
+            <img
+              alt=""
+              className="size-8 object-contain"
+              src={`${import.meta.env.BASE_URL}favicon.png`}
+            />
             HEXACALM
           </a>
           <div className="flex items-center gap-3">
