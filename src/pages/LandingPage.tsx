@@ -28,12 +28,14 @@ const externalLinks = [
 interface LandingPageProps {
   canContinue: boolean;
   onBuildWorld: () => void;
+  onRandomWorld: () => void;
   onContinue: () => void;
 }
 
 function LandingPage({
   canContinue,
   onBuildWorld,
+  onRandomWorld,
   onContinue,
 }: LandingPageProps) {
   const [ambienceOpen, setAmbienceOpen] = useState(false);
@@ -110,9 +112,9 @@ function LandingPage({
               </button>
             )}
             <button
-              aria-label="隨機生成，功能即將推出"
-              className="bg-primary text-on-primary inline-flex min-h-12 cursor-not-allowed items-center justify-center gap-2 rounded-md px-5 text-base font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70"
-              disabled
+              aria-label="隨機生成世界"
+              className="bg-primary text-on-primary inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-md px-5 text-base font-semibold transition-colors hover:brightness-110"
+              onClick={onRandomWorld}
               type="button"
             >
               <Sparkles aria-hidden="true" className="size-5" />

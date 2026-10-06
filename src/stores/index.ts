@@ -19,6 +19,7 @@ import type {
 } from "../types";
 import { coordinateKey } from "../utils/hex";
 import { getPlacementRotation } from "../utils/placement";
+import { generateRandomWorld } from "../utils/randomWorld";
 import { resolveCharacterPose } from "../utils/character";
 import { moveCharacter } from "../utils/character/movement";
 import {
@@ -43,6 +44,7 @@ interface WorldStore {
   future: TileMap[];
   hydrated: boolean;
   createBlankWorld: () => void;
+  createRandomWorld: () => void;
   hydrateWorld: (world: WorldData | null) => void;
   selectCharacter: (id: CharacterId) => void;
   removeCharacter: () => void;
@@ -200,7 +202,7 @@ function updateCharacterState(
   return { world, characterPose: nextPose };
 }
 
-export const useWorldStore = create<WorldStore>((set) => ({
+export const useWorldStore = create<WorldStore>((set, get) => ({
   world: createEmptyWorld(),
   cameraMode: "builder",
   resetCameraCounter: 0,
@@ -229,6 +231,11 @@ export const useWorldStore = create<WorldStore>((set) => ({
       future: [],
       hydrated: true,
     })),
+
+  createRandomWorld: () => {
+    const state = get();
+    state.hydrateWorld(generateRandomWorld(state.world.timeMode));
+  },
 
   hydrateWorld: (world) =>
     set({
