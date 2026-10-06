@@ -1,6 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
+@keyframes island-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
 @theme {
   --color-background: #e6ebe4;
   --color-surface: #fafaf5;
