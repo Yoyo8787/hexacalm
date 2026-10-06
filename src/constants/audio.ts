@@ -25,7 +25,7 @@ export const DEFAULT_AUDIO_SETTINGS: AudioSettings = {
 };
 
 export const CHARACTER_AUDIO = {
-  footstepPath: "/audio/characters/footstep.mp3",
+  footstepPath: `${import.meta.env.BASE_URL}audio/characters/footstep.mp3`,
   footstepGain: 0.15,
   callGain: 0.2,
   callIntervalMin: 20,
@@ -41,43 +41,43 @@ export const AUDIO_FADE = {
 
 export const AMBIENT_SOURCE_CONFIG = {
   forest: {
-    filePath: "/audio/forest.webm",
+    filePath: `${import.meta.env.BASE_URL}audio/forest.webm`,
     maxVolume: 0.65,
     saturationScore: 2,
     priority: 0.7,
   },
   river: {
-    filePath: "/audio/river.webm",
+    filePath: `${import.meta.env.BASE_URL}audio/river.webm`,
     maxVolume: 0.8,
     saturationScore: 1.5,
     priority: 1,
   },
   water: {
-    filePath: "/audio/water.webm",
+    filePath: `${import.meta.env.BASE_URL}audio/water.webm`,
     maxVolume: 0.45,
     saturationScore: 2.5,
     priority: 0.5,
   },
   settlement: {
-    filePath: "/audio/settlement.webm",
+    filePath: `${import.meta.env.BASE_URL}audio/settlement.webm`,
     maxVolume: 0.7,
     saturationScore: 2,
     priority: 1,
   },
   rural: {
-    filePath: "/audio/rural.webm",
+    filePath: `${import.meta.env.BASE_URL}audio/rural.webm`,
     maxVolume: 0.5,
     saturationScore: 2.5,
     priority: 0.6,
   },
   harbor: {
-    filePath: "/audio/harbor.webm",
+    filePath: `${import.meta.env.BASE_URL}audio/harbor.webm`,
     maxVolume: 0.8,
     saturationScore: 1,
     priority: 1,
   },
   magic: {
-    filePath: "/audio/magic.webm",
+    filePath: `${import.meta.env.BASE_URL}audio/magic.webm`,
     maxVolume: 0.2,
     saturationScore: 1,
     priority: 1,

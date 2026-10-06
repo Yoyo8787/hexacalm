@@ -19,7 +19,7 @@ class TileGLTFLoader extends GLTFLoader {
     const loadingManager = new LoadingManager();
     loadingManager.setURLModifier((url) =>
       url.toLowerCase().endsWith("/textures/colormap.png")
-        ? "models/textures/colormap.png"
+        ? `${import.meta.env.BASE_URL}models/textures/colormap.png`
         : url,
     );
     super(loadingManager);

@@ -44,7 +44,7 @@ Hexacalm 是一個以六角 Tile 建造 3D 世界的沉浸式聲景網頁應用�
 
 - 天氣（氛圍面板目前以「即將推出」佔位）、夜晚窗戶點光源，以及依時段切換鳥鳴／蟲鳴的音景（尚無音訊素材）
 - SEO：部署後驗收 LinkedIn 等平台預覽與方形分享圖片的裁切；目前描述依指定文案保留「隨場景/時間變化」，依時段切換環境音仍未實作，上線前需對齊。後續評估建置時預渲染首頁，維持純靜態部署；不加入 Twitter Card 與 sitemap。
-- GitHub Pages 部署：以個人非商業、長期免費及 100% 純前端為前提，設定 GitHub Actions 建置與發布，調整 Vite base 及模型、圖片、音訊路徑以支援專案子路徑。
+- GitHub Pages 首次發布與線上驗收：部署流程與子路徑已設定，仍需啟用儲存庫 Pages 並完成首次部署。
 - Tile 音檔補全：盤點並補齊缺少的環境音素材與 Tile 音訊對應，同步補上素材來源及授權記錄。
 
 ## 技術棧
@@ -82,6 +82,19 @@ npm run format       # 使用 Prettier 格式化專案檔案
 npm run format:check # 檢查格式
 npm run preview      # 預覽正式版建置結果
 ```
+
+## GitHub Pages 部署
+
+部署網址為 `https://yoyo8787.github.io/hexacalm/`。Vite base 設為 `/hexacalm/`，模型、預覽圖、首頁圖片與音訊使用 `import.meta.env.BASE_URL`；本機開發也使用此子路徑。
+
+1. 在 GitHub 儲存庫的 **Settings → Pages → Build and deployment → Source** 選擇 **GitHub Actions**。
+2. 自行將要發布的變更提交並同步到遠端 `main`，更新分支不會自動部署。準備上線時，在 **Actions → 部署 GitHub Pages → Run workflow** 選擇 `main` 手動觸發；流程只允許從 `main` 發布。
+3. 流程使用 Node.js 24、`npm ci` 與 `npm run build`，將 `dist` 發布到 `github-pages` environment，不執行測試。
+4. 部署成功後，開啟網站並確認首頁、隨機世界、Tile／寵物模型與預覽、環境音及角色音效正常；在瀏覽器 Network 確認資產沒有 404。
+
+發布前可自行執行 `npm run build`，再執行 `npm run preview` 並開啟 `http://localhost:4173/hexacalm/` 預覽。頁面切換使用 React state，沒有額外的 URL 路由，因此不需要 SPA 404 fallback。
+
+部署方式依循 [Vite 官方 GitHub Pages 指引](https://vite.dev/guide/static-deploy.html#github-pages)。
 
 ## 操作方式
 

@@ -19,8 +19,8 @@ function defineTileBase(
     id,
     name,
     categories,
-    modelPath: `/models/${id}.glb`,
-    previewPath: `/previews/${id}.png`,
+    modelPath: `${import.meta.env.BASE_URL}models/${id}.glb`,
+    previewPath: `${import.meta.env.BASE_URL}previews/${id}.png`,
     defaultRotation: 0,
     audio: audio ?? null,
   };
@@ -70,7 +70,7 @@ function defineRoadTile(
       weight: 0.15,
     }),
     kind: "road",
-    baseModelPath: "/models/grass.glb",
+    baseModelPath: `${import.meta.env.BASE_URL}models/grass.glb`,
     modelOffsetY: 0.2,
     traversable: true,
     roadConnections: [
