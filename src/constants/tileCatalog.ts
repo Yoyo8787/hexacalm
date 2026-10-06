@@ -1,4 +1,5 @@
 import type {
+  ConnectionTileDefinition,
   HexDirection,
   RoadTileDefinition,
   StandardTileDefinition,
@@ -35,6 +36,26 @@ function defineTile(
     ...defineTileBase(id, name, categories, audio),
     kind: "standard",
     traversable: false,
+  };
+}
+
+function defineRiverTile(
+  id: string,
+  name: string,
+  exits: readonly HexDirection[],
+  weight: number,
+): ConnectionTileDefinition {
+  return {
+    ...defineTile(id, name, ["water"], { source: "river", weight }),
+    connectionKey: "river",
+    connections: [
+      exits.includes(0),
+      exits.includes(1),
+      exits.includes(2),
+      exits.includes(3),
+      exits.includes(4),
+      exits.includes(5),
+    ],
   };
 }
 
@@ -94,58 +115,19 @@ export const TILE_CATALOG: TileDefinition[] = [
     source: "water",
     weight: 0.3,
   }),
-  defineTile("river-start", "河流源頭", ["water"], {
-    source: "river",
-    weight: 0.8,
-  }),
-  defineTile("river-end", "河流末端", ["water"], {
-    source: "river",
-    weight: 0.8,
-  }),
-  defineTile("river-straight", "直線河流", ["water"], {
-    source: "river",
-    weight: 0.8,
-  }),
-  defineTile("river-corner", "河流轉角", ["water"], {
-    source: "river",
-    weight: 0.8,
-  }),
-  defineTile("river-crossing", "河流交會", ["water"], {
-    source: "river",
-    weight: 1,
-  }),
-  defineTile("river-intersectionA", "河流岔口 A", ["water"], {
-    source: "river",
-    weight: 1,
-  }),
-  defineTile("river-intersectionB", "河流岔口 B", ["water"], {
-    source: "river",
-    weight: 1,
-  }),
-  defineTile("river-intersectionC", "河流岔口 C", ["water"], {
-    source: "river",
-    weight: 1,
-  }),
-  defineTile("river-intersectionD", "河流岔口 D", ["water"], {
-    source: "river",
-    weight: 1,
-  }),
-  defineTile("river-intersectionE", "河流岔口 E", ["water"], {
-    source: "river",
-    weight: 1,
-  }),
-  defineTile("river-intersectionF", "河流岔口 F", ["water"], {
-    source: "river",
-    weight: 1,
-  }),
-  defineTile("river-intersectionG", "河流岔口 G", ["water"], {
-    source: "river",
-    weight: 1,
-  }),
-  defineTile("river-intersectionH", "河流岔口 H", ["water"], {
-    source: "river",
-    weight: 1,
-  }),
+  defineRiverTile("river-start", "河流源頭", [3], 0.8),
+  defineRiverTile("river-end", "河流末端", [3], 0.8),
+  defineRiverTile("river-straight", "直線河流", [0, 3], 0.8),
+  defineRiverTile("river-corner", "河流轉角", [1, 3], 0.8),
+  defineRiverTile("river-crossing", "河流交會", [0, 1, 2, 3, 4, 5], 1),
+  defineRiverTile("river-intersectionA", "河流岔口 A", [1, 2, 3], 1),
+  defineRiverTile("river-intersectionB", "河流岔口 B", [0, 1, 3], 1),
+  defineRiverTile("river-intersectionC", "河流岔口 C", [0, 3, 5], 1),
+  defineRiverTile("river-intersectionD", "河流岔口 D", [0, 1, 3, 5], 1),
+  defineRiverTile("river-intersectionE", "河流岔口 E", [0, 2, 3, 5], 1),
+  defineRiverTile("river-intersectionF", "河流岔口 F", [1, 3, 5], 1),
+  defineRiverTile("river-intersectionG", "河流岔口 G", [0, 1, 2, 3, 5], 1),
+  defineRiverTile("river-intersectionH", "河流岔口 H", [0, 1, 2, 3], 1),
   defineRoadTile("path-straight", "草地直路", [0, 3]),
   defineRoadTile("path-corner", "草地彎路", [1, 3]),
   defineRoadTile("path-corner-sharp", "草地急彎", [2, 3]),

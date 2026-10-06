@@ -26,7 +26,7 @@ export type HexDirection = 0 | 1 | 2 | 3 | 4 | 5;
 
 export type HexRotation = 0 | 1 | 2 | 3 | 4 | 5;
 
-export type RoadConnections = readonly [
+export type HexConnections = readonly [
   boolean,
   boolean,
   boolean,
@@ -50,15 +50,21 @@ export interface StandardTileDefinition extends TileDefinitionBase {
   traversable: false;
 }
 
+export interface ConnectionTileDefinition extends StandardTileDefinition {
+  connectionKey: string;
+  connections: HexConnections;
+}
+
 export interface RoadTileDefinition extends TileDefinitionBase {
   kind: "road";
   traversable: boolean;
   baseModelPath: string;
   modelOffsetY: number;
-  roadConnections: RoadConnections;
+  roadConnections: HexConnections;
 }
 
-export type TileDefinition = StandardTileDefinition | RoadTileDefinition;
+export type TileDefinition =
+  StandardTileDefinition | ConnectionTileDefinition | RoadTileDefinition;
 
 export interface TileAudioAttributes {
   source: AmbientSourceId;

@@ -18,6 +18,7 @@ import type {
   WorldMode,
 } from "../types";
 import { coordinateKey } from "../utils/hex";
+import { getPlacementRotation } from "../utils/placement";
 import { resolveCharacterPose } from "../utils/character";
 import { moveCharacter } from "../utils/character/movement";
 import {
@@ -142,7 +143,7 @@ function placeSelectedTile(
     [key]: {
       ...coordinate,
       tileId: definition.id,
-      rotation: definition.defaultRotation,
+      rotation: getPlacementRotation(tiles, coordinate, definition),
     },
   };
 }

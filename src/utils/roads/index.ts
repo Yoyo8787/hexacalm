@@ -4,7 +4,7 @@ import type {
   HexDirection,
   HexRotation,
   PlacedTile,
-  RoadConnections,
+  HexConnections,
   WorldData,
 } from "../../types";
 import { coordinateKey, getOppositeDirection, HEX_DIRECTIONS } from "../hex";
@@ -15,9 +15,9 @@ export interface ConnectedRoadNeighbor {
 }
 
 export function rotateRoadConnections(
-  connections: RoadConnections,
+  connections: HexConnections,
   rotation: HexRotation,
-): RoadConnections {
+): HexConnections {
   return [
     connections[(0 - rotation + 6) % 6],
     connections[(1 - rotation + 6) % 6],
@@ -31,7 +31,7 @@ export function rotateRoadConnections(
 function getRoadState(
   tiles: WorldData["tiles"],
   coordinate: HexCoordinate,
-): { tile: PlacedTile; exits: RoadConnections } | undefined {
+): { tile: PlacedTile; exits: HexConnections } | undefined {
   const tile = tiles[coordinateKey(coordinate)];
   const definition = tile && getTileDefinition(tile.tileId);
 
