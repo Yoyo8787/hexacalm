@@ -11,7 +11,7 @@ import AmbienceControl from "../components/common/AmbienceControl";
 
 const externalLinks = [
   {
-    href: "https://github.com/Yoyo8787",
+    href: "https://github.com/Yoyo8787/hexacalm",
     label: "GitHub",
     description: "查看原始碼與開發紀錄",
     icon: GitFork,
