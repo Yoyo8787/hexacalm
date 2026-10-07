@@ -12,7 +12,11 @@ const VIEWS = [
   Icon: LucideIcon;
 }[];
 
-function CameraViewControls() {
+interface CameraViewControlsProps {
+  onNotice: (message: string) => void;
+}
+
+function CameraViewControls({ onNotice }: CameraViewControlsProps) {
   const cameraMode = useWorldStore((state) => state.cameraMode);
   const hasCharacter = useWorldStore((state) => !!state.world.character);
   const setCameraMode = useWorldStore((state) => state.setCameraMode);
@@ -23,18 +27,25 @@ function CameraViewControls() {
         const disabled = id !== "builder" && !hasCharacter;
 
         return (
-          // Disabled buttons do not show a title, so the wrapper carries it.
           <span key={id} title={disabled ? "需要先加入寵物" : undefined}>
             <button
               type="button"
               aria-label={label}
               aria-pressed={cameraMode === id}
-              disabled={disabled}
-              onClick={() => setCameraMode(id)}
-              className={`flex h-10 items-center gap-1.5 rounded-lg px-3 text-[13px] font-medium whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:opacity-40 md:px-3.5 ${
+              aria-disabled={disabled}
+              onClick={() => {
+                if (disabled) {
+                  onNotice("需要先加入寵物");
+                  return;
+                }
+                setCameraMode(id);
+              }}
+              className={`flex h-10 items-center gap-1.5 rounded-lg px-3 text-[13px] font-medium whitespace-nowrap transition-colors aria-disabled:cursor-not-allowed aria-disabled:opacity-40 md:px-3.5 ${
                 cameraMode === id
                   ? "bg-primary text-on-primary"
-                  : "text-muted enabled:hover:text-foreground enabled:hover:bg-hover"
+                  : disabled
+                    ? "text-muted"
+                    : "text-muted hover:text-foreground hover:bg-hover"
               }`}
             >
               <Icon className="size-4" />

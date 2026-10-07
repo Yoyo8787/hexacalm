@@ -6,12 +6,14 @@ import BuildToolbar from "../components/build/BuildToolbar";
 import CursorHint from "../components/build/CursorHint";
 import TilePicker from "../components/build/TilePicker";
 import AmbienceControl from "../components/common/AmbienceControl";
+import DockFeedback from "../components/common/DockFeedback";
 import ErrorBoundary from "../components/common/ErrorBoundary";
 import Header from "../components/common/Header";
 import CameraViewControls from "../components/world/CameraViewControls";
 import ResetViewPill from "../components/world/ResetViewPill";
 import WorldCanvas from "../components/world/WorldCanvas";
 import { useWorldDebug } from "../hooks/useWorldDebug";
+import { useDockNotice } from "../hooks/useDockNotice";
 import { useWorldStore } from "../stores";
 
 // Matches the Dock's bottom-4 offset and the gap above it.
@@ -39,6 +41,7 @@ function WorldPage({ onBack }: WorldPageProps) {
   const [openMenu, setOpenMenu] = useState<WorldMenu | null>(null);
   const [dockHeight, setDockHeight] = useState(0);
   const dock = useRef<HTMLDivElement>(null);
+  const { notices, showNotice } = useDockNotice();
 
   useWorldDebug();
 
@@ -118,12 +121,19 @@ function WorldPage({ onBack }: WorldPageProps) {
               mode === "build" ? "my-3" : "mx-1 h-7"
             }`}
           />
-          {mode === "build" ? <TilePicker /> : <CameraViewControls />}
+          {mode === "build" ? (
+            <TilePicker />
+          ) : (
+            <CameraViewControls onNotice={showNotice} />
+          )}
         </div>
-        <ResetViewPill
+        <DockFeedback
           bottom={DOCK_BOTTOM + dockHeight + DOCK_PILL_GAP}
           hidden={openMenu !== null}
-        />
+          notices={notices}
+        >
+          <ResetViewPill hidden={openMenu !== null} />
+        </DockFeedback>
         {mode === "build" && (
           <>
             <BuildToolbar />

@@ -11,6 +11,42 @@
   }
 }
 
+@keyframes dock-notice-enter {
+  from {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dock-notice-leave {
+  from {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.dock-notice {
+  display: grid;
+  grid-template-rows: 1fr;
+  animation: dock-notice-enter ease-out both;
+}
+
+.dock-notice-leaving {
+  animation-name: dock-notice-leave;
+}
+
 @theme {
   --color-background: #e6ebe4;
   --color-surface: #fafaf5;
@@ -61,6 +97,15 @@ html.time-transition * {
 @media (prefers-reduced-motion: reduce) {
   html.time-transition * {
     transition-duration: 0.3s;
+  }
+
+  .dock-notice {
+    animation: none;
+  }
+
+  .dock-notice-leaving {
+    grid-template-rows: 0fr;
+    opacity: 0;
   }
 }
 
