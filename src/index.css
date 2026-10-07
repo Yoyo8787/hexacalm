@@ -47,6 +47,73 @@
   animation-name: dock-notice-leave;
 }
 
+@keyframes responsive-menu-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--menu-slide-y));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes responsive-menu-leave {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(var(--menu-slide-y));
+  }
+}
+
+@keyframes responsive-menu-scrim-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes responsive-menu-scrim-leave {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.responsive-menu {
+  --menu-slide-y: -8px;
+  animation: responsive-menu-enter ease-out both;
+}
+
+.responsive-menu[data-above="true"] {
+  --menu-slide-y: 8px;
+}
+
+.responsive-menu[data-mobile="true"] {
+  --menu-slide-y: 100%;
+}
+
+.responsive-menu[data-open="false"] {
+  animation-name: responsive-menu-leave;
+  animation-timing-function: ease-in;
+  pointer-events: none;
+}
+
+.responsive-menu-scrim {
+  animation: responsive-menu-scrim-enter ease-out both;
+}
+
+.responsive-menu-scrim[data-open="false"] {
+  animation-name: responsive-menu-scrim-leave;
+}
+
 @theme {
   --color-background: #e6ebe4;
   --color-surface: #fafaf5;
@@ -106,6 +173,16 @@ html.time-transition * {
   .dock-notice-leaving {
     grid-template-rows: 0fr;
     opacity: 0;
+  }
+
+  .responsive-menu,
+  .responsive-menu-scrim {
+    animation: none;
+  }
+
+  .responsive-menu[data-open="false"],
+  .responsive-menu-scrim[data-open="false"] {
+    visibility: hidden;
   }
 }
 

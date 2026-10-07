@@ -37,6 +37,7 @@ export interface AmbientAudioEngine {
   setPlaying: (playing: boolean) => void;
   setMuted: (muted: boolean) => void;
   setMasterVolume: (volume: number) => void;
+  setSleepDeadline: (deadline: number | null) => void;
   setMix: (mix: AudioMixSource[]) => void;
   subscribeDebugLoops: (
     listener: (loops: readonly DebugLoop[]) => void,
@@ -51,6 +52,8 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
   const unavailableSources = new Set<AmbientSourceId>();
   let stopWaitingForGesture: (() => void) | null = null;
   let masterGain: Tone.Gain | null = null;
+  let sleepGain: Tone.Gain | null = null;
+  let sleepDeadline: number | null = null;
   let masterVolume = DEFAULT_MASTER_VOLUME;
   let mix = EMPTY_MIX;
   let muted = false;
@@ -84,20 +87,50 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
 
   function ensureMasterGain(): void {
     if (!masterGain) {
-      masterGain = new Tone.Gain(0).toDestination();
+      sleepGain = new Tone.Gain(1).toDestination();
+      masterGain = new Tone.Gain(0).connect(sleepGain);
+      updateSleepGain();
       characterAudio = createCharacterAudio(masterGain);
       characterAudio.setSettings(characterSettings);
       characterAudio.setCharacter(character);
     }
   }
 
-  function updateMasterGain(): void {
+  function updateMasterGain(duration: number = AUDIO_FADE.master): void {
     if (masterGain) {
-      masterGain.gain.rampTo(
-        playing && !muted ? masterVolume : 0,
-        AUDIO_FADE.master,
-      );
+      masterGain.gain.rampTo(playing && !muted ? masterVolume : 0, duration);
     }
+  }
+
+  function updateSleepGain(): void {
+    if (!sleepGain) return;
+    const gain = sleepGain.gain;
+    const now = Tone.now();
+    gain.cancelAndHoldAtTime(now);
+    if (sleepDeadline === null) {
+      gain.rampTo(1, AUDIO_FADE.master);
+      return;
+    }
+    const remaining = (sleepDeadline - Date.now()) / 1000;
+    if (remaining <= 0) {
+      gain.setValueAtTime(0, now);
+      return;
+    }
+    const fadeSeconds = Math.min(remaining, AUDIO_FADE.sleep);
+    const level = Math.exp(
+      -Math.log(10000) * (1 - fadeSeconds / AUDIO_FADE.sleep),
+    );
+    gain.setValueAtTime(level, now);
+    const fadeStart = now + Math.max(0, remaining - AUDIO_FADE.sleep);
+    gain.setValueAtTime(level, fadeStart);
+    const tail = Math.min(0.02, remaining / 2);
+    gain.exponentialRampToValueAtTime(0.0001, now + remaining - tail);
+    gain.linearRampToValueAtTime(0, now + remaining);
+  }
+
+  function setSleepDeadline(deadline: number | null): void {
+    sleepDeadline = deadline;
+    updateSleepGain();
   }
 
   function disposeLoop(loop: ActiveLoop): void {
@@ -276,7 +309,8 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
     }
 
     ensureMasterGain();
-    updateMasterGain();
+    updateSleepGain();
+    updateMasterGain(AUDIO_FADE.playIn);
     characterAudio?.setActive(playing && !muted);
     activeLoops.forEach((loop) => startLoop(loop));
     sync();
@@ -297,6 +331,10 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
 
     if (!playing) {
       cancelGestureWait();
+      if (masterGain && sleepDeadline !== null && sleepDeadline <= Date.now()) {
+        masterGain.gain.cancelScheduledValues(Tone.now());
+        masterGain.gain.setValueAtTime(0, Tone.now());
+      }
       updateMasterGain();
       return;
     }
@@ -345,6 +383,9 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
     activeLoops.forEach((_, source) => removeLoop(source, 0));
     masterGain?.dispose();
     masterGain = null;
+    sleepGain?.dispose();
+    sleepGain = null;
+    sleepDeadline = null;
     mix = EMPTY_MIX;
     playing = false;
   }
@@ -362,6 +403,7 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
     setPlaying,
     setMuted,
     setMasterVolume,
+    setSleepDeadline,
     setMix,
     subscribeDebugLoops,
     dispose,

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useAudioStore } from "../stores";
+import { ambientAudioEngine } from "../audio/engine";
 
 export function useSleepTimer() {
   const [deadline, setDeadline] = useState<number | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
 
   useEffect(() => {
+    ambientAudioEngine.setSleepDeadline(deadline);
     if (deadline === null) return;
     let disposed = false;
     let finished = false;
@@ -24,6 +26,7 @@ export function useSleepTimer() {
       const remaining = deadline - Date.now();
       if (remaining <= 0) {
         finished = true;
+        ambientAudioEngine.setPlaying(false);
         useAudioStore.getState().setPlaying(false);
         setDeadline(null);
         setRemainingSeconds(null);
@@ -66,6 +69,9 @@ export function useSleepTimer() {
     };
     const onVisibilityChange = () => {
       update();
+      if (!finished && document.visibilityState === "visible") {
+        ambientAudioEngine.setSleepDeadline(deadline);
+      }
       if (document.visibilityState === "visible") void acquire();
     };
     update();
@@ -75,6 +81,7 @@ export function useSleepTimer() {
     document.addEventListener("visibilitychange", onVisibilityChange);
     return () => {
       disposed = true;
+      ambientAudioEngine.setSleepDeadline(null);
       clearInterval(interval);
       clearTimeout(timeout);
       document.removeEventListener("visibilitychange", onVisibilityChange);

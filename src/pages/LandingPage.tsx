@@ -49,8 +49,8 @@ function LandingPage({
   }, [ambienceOpen]);
 
   return (
-    <main className="bg-background text-foreground relative isolate min-h-svh overflow-hidden lg:h-svh">
-      <div className="mx-auto flex min-h-svh w-full max-w-6xl flex-col px-6 py-6 sm:px-10 lg:grid lg:h-full lg:min-h-0 lg:grid-rows-[auto_minmax(0,1fr)_auto] lg:px-12 lg:py-[clamp(12px,3svh,24px)]">
+    <main className="bg-background text-foreground relative isolate min-h-svh overflow-hidden lg:min-h-svh">
+      <div className="mx-auto flex min-h-svh w-full max-w-6xl flex-col px-6 py-6 sm:px-10 lg:grid lg:grid-rows-[auto_1fr_auto] lg:px-12 lg:py-[clamp(12px,3svh,24px)]">
         <header className="border-line relative z-20 flex items-center justify-between border-b pb-5">
           <a
             className="text-foreground flex items-center gap-2 text-sm font-semibold tracking-[0.18em]"
@@ -102,7 +102,7 @@ function LandingPage({
               <ArrowUpRight aria-hidden="true" className="size-4" />
             </a>
 
-            <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap lg:mt-5 lg:[&>button]:px-3 lg:[&>button]:text-sm">
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap lg:mt-5 lg:[&>button]:px-3">
               {canContinue && (
                 <button
                   className="bg-primary text-on-primary inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-5 text-base font-semibold transition-colors hover:brightness-110"
@@ -115,7 +115,7 @@ function LandingPage({
               )}
               <button
                 aria-label="隨機生成世界"
-                className="bg-primary text-on-primary inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-md px-5 text-base font-semibold transition-colors hover:brightness-110"
+                className={`inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-md px-5 text-base font-semibold transition-colors ${canContinue ? "border-secondary bg-surface text-foreground hover:border-primary/60 hover:bg-surface-hover border" : "bg-primary text-on-primary hover:brightness-110"}`}
                 onClick={onRandomWorld}
                 type="button"
               >

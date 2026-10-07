@@ -86,7 +86,9 @@ function CursorHint() {
             src={selectedTile.previewPath}
           />
           放置{selectedTile.name}
-          <span className="text-muted text-xs font-normal">右鍵取消</span>
+          <span className="text-muted text-xs font-normal">
+            再點一次 Tile 取消
+          </span>
         </>
       )}
       {action === "remove" && (

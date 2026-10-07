@@ -10,7 +10,7 @@ export interface AmbientSourceConfig {
 export const AUDIBLE_VOLUME_THRESHOLD = 0.05;
 export const MAX_AMBIENT_LOOPS = 3;
 export const SOURCE_REPLACEMENT_MARGIN = 0.15;
-export const DEFAULT_MASTER_VOLUME = 0.7;
+export const DEFAULT_MASTER_VOLUME = 0.5;
 export const AUDIO_PERSIST_DELAY = 0.3;
 export const CHARACTER_LISTENER_RADIUS = 3;
 export const CHARACTER_MIX_SAMPLE_SPACING = 0.1;
@@ -33,6 +33,8 @@ export const CHARACTER_AUDIO = {
 } as const;
 
 export const AUDIO_FADE = {
+  playIn: 3,
+  sleep: 60,
   loopIn: 0.5,
   loopOut: 0.7,
   volumeRamp: 0.2,

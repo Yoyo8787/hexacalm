@@ -3,7 +3,7 @@ import { DOCK_NOTICE_ANIMATION_DURATION } from "../../hooks/useDockNotice";
 import type { DockNotice } from "../../types/dockNotice";
 
 interface DockFeedbackProps {
-  bottom: number;
+  bottom: string;
   hidden: boolean;
   notices: readonly DockNotice[];
   children: ReactNode;

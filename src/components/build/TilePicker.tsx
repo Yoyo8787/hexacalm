@@ -110,7 +110,7 @@ function TilePicker() {
           {canScroll && (
             <div className="to-surface/95 pointer-events-none absolute inset-y-0 right-0 flex w-18 items-center justify-end bg-linear-to-r from-transparent to-60%">
               <button
-                aria-label="捲動 Tile 列表"
+                aria-label="捲動地塊列表"
                 className="bg-foreground/10 hover:bg-foreground/16 pointer-events-auto grid size-7 place-items-center rounded-full transition-colors"
                 onClick={() =>
                   list.current?.scrollBy({
@@ -127,7 +127,7 @@ function TilePicker() {
         </div>
       ) : (
         <div className="text-muted grid h-22 place-items-center text-sm">
-          Road 資產尚未匯入
+          這個分類還沒有地塊
         </div>
       )}
     </div>

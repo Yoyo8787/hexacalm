@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { ArrowLeft, Eye, Hammer } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
+import { ArrowLeft, Leaf, Hammer } from "lucide-react";
 import type { WorldMode } from "../../types";
 
 interface HeaderProps {
@@ -11,10 +11,15 @@ interface HeaderProps {
 
 const MODES = [
   { id: "build", label: "建造", Icon: Hammer },
-  { id: "relax", label: "放鬆", Icon: Eye },
+  { id: "relax", label: "放鬆", Icon: Leaf },
 ] as const;
 
 function Header({ children, mode, onBack, onModeChange }: HeaderProps) {
+  const [showLabels, setShowLabels] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLabels(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
   return (
     <header className="pointer-events-none absolute inset-x-4 top-4 z-20 grid grid-cols-[1fr_auto] items-center gap-3 sm:grid-cols-[1fr_auto_1fr]">
       <div className="panel pointer-events-auto flex items-center gap-2 justify-self-start rounded-xl p-1 sm:pr-3.5">
@@ -51,7 +56,9 @@ function Header({ children, mode, onBack, onModeChange }: HeaderProps) {
             type="button"
           >
             <Icon className="size-4" />
-            <span className="hidden sm:inline">{label}</span>
+            <span className={showLabels ? "inline" : "hidden sm:inline"}>
+              {label}
+            </span>
           </button>
         ))}
       </div>

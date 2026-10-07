@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
+import ResponsiveMenu from "../common/ResponsiveMenu";
 import { ChevronUp, Footprints, Plus } from "lucide-react";
 import {
   CHARACTER_CATALOG,
@@ -30,7 +31,7 @@ function CharacterControls({
   const setWalking = useWorldStore((state) => state.setCharacterWalking);
   const speed = useWorldStore((state) => state.characterPose?.speed ?? 1);
   const setSpeed = useWorldStore((state) => state.setCharacterSpeed);
-  const container = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
   const hasRoad = useMemo(
     () =>
       Object.values(tiles).some((tile) => isValidCharacterRoad(tiles, tile)),
@@ -40,23 +41,10 @@ function CharacterControls({
     ? getCharacterDefinition(character.id)
     : undefined;
 
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onPointerDown = (event: PointerEvent) => {
-      if (
-        event.target instanceof Node &&
-        !container.current?.contains(event.target)
-      ) {
-        onMenuOpenChange(false);
-      }
-    };
-    document.addEventListener("pointerdown", onPointerDown);
-    return () => document.removeEventListener("pointerdown", onPointerDown);
-  }, [menuOpen, onMenuOpenChange]);
-
   const picker = (
-    <div ref={container} className="relative">
+    <div className="relative">
       <button
+        ref={trigger}
         aria-expanded={menuOpen}
         aria-label={character ? "更換寵物" : "加入寵物"}
         className={`hover:bg-hover flex h-10 items-center gap-2 rounded-lg pl-1 text-sm font-medium transition-colors ${
@@ -93,57 +81,75 @@ function CharacterControls({
           }`}
         />
       </button>
-      {menuOpen && (
-        <section
-          aria-label={character ? "更換寵物" : "加入寵物"}
-          className="popover absolute bottom-full left-0 z-20 mb-2 w-52 rounded-xl p-2"
-        >
-          <h2 className="text-muted px-2 pt-1 pb-2 text-xs font-semibold">
-            {character ? "更換寵物" : "加入寵物"}
-          </h2>
-          {CHARACTER_CATALOG.map((option) => (
-            <button
-              key={option.id}
-              aria-pressed={character?.id === option.id}
-              className={`enabled:hover:bg-hover flex w-full items-center gap-2 rounded-lg px-2 py-1 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
-                character?.id === option.id
-                  ? "bg-primary/16 text-primary font-semibold"
-                  : ""
-              }`}
-              disabled={!hasRoad}
-              onClick={() => {
-                selectCharacter(option.id);
-                onMenuOpenChange(false);
-              }}
-              type="button"
-            >
-              <img
-                alt=""
-                className="size-7 object-contain"
-                src={option.previewPath}
+      <ResponsiveMenu
+        open={menuOpen}
+        label={character ? "更換寵物" : "加入寵物"}
+        trigger={trigger}
+        onClose={() => onMenuOpenChange(false)}
+        desktopClassName="absolute bottom-full left-0 z-20 mb-2 w-52 rounded-xl p-2"
+      >
+        <h2 className="text-muted px-2 pt-1 pb-2 text-xs font-semibold">
+          {character ? "更換寵物" : "加入寵物"}
+        </h2>
+        {CHARACTER_CATALOG.map((option) => (
+          <button
+            key={option.id}
+            aria-pressed={character?.id === option.id}
+            className={`enabled:hover:bg-hover flex min-h-11 w-full items-center gap-2 rounded-lg px-2 py-1 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-0 ${
+              character?.id === option.id
+                ? "bg-primary/16 text-primary font-semibold"
+                : ""
+            }`}
+            disabled={!hasRoad}
+            onClick={() => {
+              selectCharacter(option.id);
+              onMenuOpenChange(false);
+            }}
+            type="button"
+          >
+            <img
+              alt=""
+              className="size-7 object-contain"
+              src={option.previewPath}
+            />
+            {option.name}
+          </button>
+        ))}
+        {!hasRoad && (
+          <p className="text-muted px-2 pt-2 text-xs">
+            先放置一格道路，就能加入寵物。
+          </p>
+        )}
+        {character && (
+          <div className="border-line mt-2 border-t pt-2 md:hidden">
+            <label className="text-muted flex min-h-11 items-center gap-3 px-2 py-4 text-sm tabular-nums">
+              速度 {speed.toFixed(1)}×
+              <input
+                aria-label="寵物行走速度"
+                className="accent-primary min-w-0 flex-1"
+                type="range"
+                min={CHARACTER_MIN_SPEED}
+                max={CHARACTER_MAX_SPEED}
+                step="0.1"
+                value={speed}
+                onChange={(event) => setSpeed(Number(event.target.value))}
               />
-              {option.name}
-            </button>
-          ))}
-          {!hasRoad && (
-            <p className="text-muted px-2 pt-2 text-xs">
-              先放置一格道路，就能加入寵物。
-            </p>
-          )}
-          {character && (
-            <button
-              className="text-danger hover:bg-danger/10 border-line mt-2 w-full rounded-lg border-t px-2 py-2 text-left text-sm transition-colors"
-              onClick={() => {
-                removeCharacter();
-                onMenuOpenChange(false);
-              }}
-              type="button"
-            >
-              移除角色
-            </button>
-          )}
-        </section>
-      )}
+            </label>
+          </div>
+        )}
+        {character && (
+          <button
+            className="text-danger hover:bg-danger/10 border-line mt-2 min-h-11 w-full rounded-lg border-t px-2 py-2 text-left text-sm transition-colors sm:min-h-0"
+            onClick={() => {
+              removeCharacter();
+              onMenuOpenChange(false);
+            }}
+            type="button"
+          >
+            移除寵物
+          </button>
+        )}
+      </ResponsiveMenu>
     </div>
   );
 
@@ -171,8 +177,7 @@ function CharacterControls({
     >
       {speed.toFixed(1)}×
       <input
-        aria-label="角色行走速度"
-        // Stacked below md, the slider fills the row under the two icons.
+        aria-label="寵物行走速度"
         className={`accent-primary ${
           layout === "stacked"
             ? "w-0 min-w-0 flex-1 md:w-18 md:flex-none"
@@ -190,12 +195,11 @@ function CharacterControls({
 
   if (layout === "stacked") {
     return (
-      // Below md the picker and walk toggle share a row above the slider.
       <section
         aria-label="寵物夥伴"
         className={`shrink-0 gap-2 p-2 md:w-44 md:p-3 ${
           character
-            ? "grid grid-cols-[auto_auto] content-center items-center gap-x-2 md:grid-cols-[auto_1fr] md:content-between md:gap-x-0.5"
+            ? "grid grid-cols-1 content-center items-center justify-items-center md:grid-cols-[auto_1fr] md:content-between md:justify-items-stretch md:gap-x-0.5"
             : "flex flex-col"
         }`}
       >
@@ -206,7 +210,7 @@ function CharacterControls({
           <>
             <div className="md:col-span-2">{picker}</div>
             {walkToggle}
-            <div className="col-span-2 md:col-span-1">{speedControl}</div>
+            <div className="hidden md:col-span-1 md:block">{speedControl}</div>
           </>
         ) : (
           <div className="flex flex-1 flex-col justify-center">{picker}</div>
@@ -219,7 +223,7 @@ function CharacterControls({
     <section aria-label="寵物夥伴" className="flex items-center gap-0.5">
       {picker}
       {walkToggle}
-      {speedControl}
+      <div className="hidden md:block">{speedControl}</div>
     </section>
   );
 }

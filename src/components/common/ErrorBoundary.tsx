@@ -1,7 +1,9 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import WorldError from "./WorldError";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
+  onBack: () => void;
 }
 
 interface ErrorBoundaryState {
@@ -21,16 +23,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   render() {
     if (this.state.hasError) {
-      return (
-        <div className="grid h-full place-items-center p-6 text-center">
-          <div>
-            <p className="text-lg font-semibold">世界載入失敗</p>
-            <p className="text-muted mt-2 text-sm">
-              請重新整理頁面後再試一次。
-            </p>
-          </div>
-        </div>
-      );
+      return <WorldError onBack={this.props.onBack} />;
     }
 
     return this.props.children;

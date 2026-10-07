@@ -32,11 +32,11 @@ function ResetViewPill({ hidden }: ResetViewPillProps) {
     >
       <LocateFixed className="size-3.5" />
       {settling ? (
-        "回正中…"
+        "回到預設視角…"
       ) : (
         <>
           回到預設視角
-          <kbd className="bg-foreground/10 grid h-5 min-w-5 place-items-center rounded-[5px] px-1.25 font-mono text-[11px] font-semibold">
+          <kbd className="bg-foreground/10 grid h-5 min-w-5 place-items-center rounded-[5px] px-1.25 font-mono text-[11px] font-semibold [@media(pointer:coarse)]:hidden">
             F
           </kbd>
         </>

@@ -46,6 +46,9 @@ export function useTimeTheme(): void {
     const animate = applied.current !== null && applied.current !== timeOfDay;
     applied.current = hydrated ? timeOfDay : null;
     root.dataset.time = timeOfDay;
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", timeOfDay === "night" ? "#121c2a" : "#e6ebe4");
     if (!animate) return;
 
     root.classList.add("time-transition");

@@ -14,10 +14,9 @@ import ResetViewPill from "../components/world/ResetViewPill";
 import WorldCanvas from "../components/world/WorldCanvas";
 import { useWorldDebug } from "../hooks/useWorldDebug";
 import { useDockNotice } from "../hooks/useDockNotice";
+import { useIdleHud } from "../hooks/useIdleHud";
 import { useWorldStore } from "../stores";
 
-// Matches the Dock's bottom-4 offset and the gap above it.
-const DOCK_BOTTOM = 16;
 const DOCK_PILL_GAP = 12;
 
 type WorldMenu = "ambience" | "audio" | "pet";
@@ -39,9 +38,13 @@ function WorldPage({ onBack }: WorldPageProps) {
   const mode = useWorldStore((state) => state.world.mode);
   const setMode = useWorldStore((state) => state.setMode);
   const [openMenu, setOpenMenu] = useState<WorldMenu | null>(null);
+  const [sleepOpen, setSleepOpen] = useState(false);
   const [dockHeight, setDockHeight] = useState(0);
   const dock = useRef<HTMLDivElement>(null);
   const { notices, showNotice } = useDockNotice();
+  const hudHidden = useIdleHud(
+    mode === "relax" && openMenu === null && !sleepOpen && notices.length === 0,
+  );
 
   useWorldDebug();
 
@@ -86,26 +89,33 @@ function WorldPage({ onBack }: WorldPageProps) {
 
   return (
     <main className="bg-background text-foreground relative h-svh overflow-hidden">
-      <Header mode={mode} onBack={onBack} onModeChange={setMode}>
-        <div className="flex items-center gap-2">
-          <AmbienceControl
-            menuOpen={openMenu === "ambience"}
-            onMenuOpenChange={(open) => setOpenMenu(open ? "ambience" : null)}
-          />
-          <SleepTimer />
-          <AudioController
-            menuOpen={openMenu === "audio"}
-            onMenuOpenChange={(open) => setOpenMenu(open ? "audio" : null)}
-          />
-        </div>
-      </Header>
+      <div
+        inert={hudHidden}
+        className={`pointer-events-none absolute inset-0 z-20 transition-opacity duration-[1200ms] motion-reduce:duration-200 ${hudHidden ? "opacity-0" : "opacity-100"}`}
+      >
+        <Header mode={mode} onBack={onBack} onModeChange={setMode}>
+          <div className="flex items-center gap-2">
+            <AmbienceControl
+              menuOpen={openMenu === "ambience"}
+              onMenuOpenChange={(open) => setOpenMenu(open ? "ambience" : null)}
+            />
+            <SleepTimer onOpenChange={setSleepOpen} />
+            <AudioController
+              menuOpen={openMenu === "audio"}
+              onMenuOpenChange={(open) => setOpenMenu(open ? "audio" : null)}
+            />
+          </div>
+        </Header>
+      </div>
       <section className="relative h-svh">
-        <ErrorBoundary>
-          <WorldCanvas />
+        <ErrorBoundary onBack={onBack}>
+          <WorldCanvas onBack={onBack} />
         </ErrorBoundary>
         <div
           ref={dock}
-          className={`panel absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 rounded-2xl ${
+          inert={hudHidden}
+          style={{ bottom: "max(16px, env(safe-area-inset-bottom))" }}
+          className={`panel absolute left-1/2 z-10 flex max-w-[calc(100%-2rem)] -translate-x-1/2 rounded-2xl transition-opacity duration-[1200ms] motion-reduce:duration-200 ${hudHidden ? "opacity-0" : "opacity-100"} ${
             mode === "build"
               ? "w-[min(1080px,calc(100%-2rem))] items-stretch"
               : "w-max items-center gap-1.5 p-1.5"
@@ -128,11 +138,11 @@ function WorldPage({ onBack }: WorldPageProps) {
           )}
         </div>
         <DockFeedback
-          bottom={DOCK_BOTTOM + dockHeight + DOCK_PILL_GAP}
-          hidden={openMenu !== null}
+          bottom={`calc(max(16px, env(safe-area-inset-bottom)) + ${dockHeight + DOCK_PILL_GAP}px)`}
+          hidden={openMenu !== null || sleepOpen || hudHidden}
           notices={notices}
         >
-          <ResetViewPill hidden={openMenu !== null} />
+          <ResetViewPill hidden={openMenu !== null || sleepOpen || hudHidden} />
         </DockFeedback>
         {mode === "build" && (
           <>

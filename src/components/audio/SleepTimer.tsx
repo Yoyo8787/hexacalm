@@ -2,13 +2,20 @@ import { useId, useRef, useState } from "react";
 import { Timer, X } from "lucide-react";
 import { useSleepTimer } from "../../hooks/useSleepTimer";
 
-function SleepTimer() {
+const PRESETS = [15, 30, 60] as const;
+
+interface SleepTimerProps {
+  onOpenChange: (open: boolean) => void;
+}
+
+function SleepTimer({ onOpenChange }: SleepTimerProps) {
   const { remainingMinutes, remainingSeconds, start, cancel } = useSleepTimer();
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const inputId = useId();
   const errorId = useId();
   const [minutes, setMinutes] = useState("30");
+  const [custom, setCustom] = useState(false);
   const value = Number(minutes);
   const valid =
     /^\d+$/.test(minutes) &&
@@ -27,7 +34,12 @@ function SleepTimer() {
         className="panel hover:bg-hover flex h-11 items-center gap-2 rounded-xl px-3 transition-colors"
         onClick={() => {
           setMinutes(String(remainingMinutes ?? 30));
+          setCustom(
+            remainingMinutes !== null &&
+              !PRESETS.some((preset) => preset === remainingMinutes),
+          );
           dialog.current?.showModal();
+          onOpenChange(true);
         }}
         type="button"
       >
@@ -45,6 +57,7 @@ function SleepTimer() {
         aria-labelledby={titleId}
         className="bg-surface text-foreground border-line fixed inset-0 m-auto max-h-[calc(100svh-2rem)] w-[min(440px,calc(100%-2rem))] overflow-auto rounded-2xl border p-6 shadow-2xl backdrop:bg-black/60"
         onKeyDown={(event) => event.stopPropagation()}
+        onClose={() => onOpenChange(false)}
         onClick={(event) => {
           if (event.target !== event.currentTarget) return;
           const bounds = event.currentTarget.getBoundingClientRect();
@@ -70,7 +83,9 @@ function SleepTimer() {
             <X aria-hidden="true" className="size-5" />
           </button>
         </div>
-        <p className="text-muted mt-2 text-sm">時間到後，聲音將自動暫停。</p>
+        <p className="text-muted mt-2 text-sm">
+          最後一分鐘聲音會漸弱，時間到後自動暫停。
+        </p>
         {remainingSeconds !== null && (
           <div className="mt-6 text-center">
             <p className="text-muted text-sm">剩餘時間</p>
@@ -92,27 +107,63 @@ function SleepTimer() {
             dialog.current?.close();
           }}
         >
-          <label htmlFor={inputId} className="text-sm font-medium">
-            倒數分鐘
-          </label>
-          <input
-            id={inputId}
-            aria-invalid={!valid}
-            aria-describedby={valid ? undefined : errorId}
-            className="bg-background focus:border-primary border-line mt-2 w-full rounded-lg border px-4 py-3 outline-none"
-            type="number"
-            inputMode="numeric"
-            min="1"
-            max="180"
-            step="1"
-            required
-            value={minutes}
-            onChange={(event) => setMinutes(event.target.value)}
-          />
-          {!valid && (
-            <p id={errorId} role="alert" className="mt-2 text-sm text-red-400">
-              請輸入 1–180 的整數分鐘。
-            </p>
+          <div
+            role="group"
+            aria-label="倒數時間"
+            className="mb-4 grid grid-cols-4 gap-2"
+          >
+            {PRESETS.map((preset) => (
+              <button
+                key={preset}
+                type="button"
+                aria-pressed={!custom && value === preset}
+                className={`min-h-11 rounded-lg border px-2 text-sm ${!custom && value === preset ? "border-primary bg-primary/16 text-primary" : "border-line hover:bg-hover"}`}
+                onClick={() => {
+                  setCustom(false);
+                  setMinutes(String(preset));
+                }}
+              >
+                {preset} 分鐘
+              </button>
+            ))}
+            <button
+              type="button"
+              aria-pressed={custom}
+              className={`min-h-11 rounded-lg border px-2 text-sm ${custom ? "border-primary bg-primary/16 text-primary" : "border-line hover:bg-hover"}`}
+              onClick={() => setCustom(true)}
+            >
+              自訂
+            </button>
+          </div>
+          {custom && (
+            <>
+              <label htmlFor={inputId} className="text-sm font-medium">
+                倒數分鐘
+              </label>
+              <input
+                id={inputId}
+                aria-invalid={!valid}
+                aria-describedby={valid ? undefined : errorId}
+                className="bg-background focus:border-primary border-line mt-2 w-full rounded-lg border px-4 py-3 outline-none"
+                type="number"
+                inputMode="numeric"
+                min="1"
+                max="180"
+                step="1"
+                required
+                value={minutes}
+                onChange={(event) => setMinutes(event.target.value)}
+              />
+              {!valid && (
+                <p
+                  id={errorId}
+                  role="alert"
+                  className="text-danger mt-2 text-sm"
+                >
+                  請輸入 1–180 的整數分鐘。
+                </p>
+              )}
+            </>
           )}
           <div className="mt-6 flex gap-3">
             {running && (
