@@ -34,7 +34,7 @@ function Header({ children, mode, onBack, onModeChange }: HeaderProps) {
         <img
           alt=""
           className="size-7 object-contain"
-          src={`${import.meta.env.BASE_URL}favicon.png`}
+          src={`${import.meta.env.BASE_URL}images/logo.webp`}
         />
         <span className="hidden text-[13px] font-semibold tracking-[0.18em] sm:inline">
           HEXACALM

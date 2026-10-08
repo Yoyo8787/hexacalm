@@ -59,7 +59,7 @@ function LandingPage({
             <img
               alt=""
               className="size-8 object-contain"
-              src={`${import.meta.env.BASE_URL}favicon.png`}
+              src={`${import.meta.env.BASE_URL}images/logo.webp`}
             />
             HEXACALM
           </a>
@@ -138,7 +138,7 @@ function LandingPage({
           </div>
           <div className="pointer-events-none absolute -inset-x-6 inset-y-0 -z-10 sm:-inset-x-10 lg:relative lg:inset-auto lg:z-auto lg:h-full lg:min-h-0">
             <img
-              src={`${import.meta.env.BASE_URL}images/hexacalm-world.png`}
+              src={`${import.meta.env.BASE_URL}images/hexacalm-world.webp`}
               alt="由森林、湖泊、木橋與瀑布組成的低多邊形浮島插畫"
               width={1254}
               height={1254}
