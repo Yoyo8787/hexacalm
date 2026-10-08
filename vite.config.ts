@@ -6,4 +6,20 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   base: "/hexacalm/",
   plugins: [react(), tailwindcss()],
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: "vendor",
+              test: /node_modules/,
+              entriesAware: true,
+              maxSize: 500_000,
+            },
+          ],
+        },
+      },
+    },
+  },
 });

@@ -7,15 +7,12 @@ import { MOVE_KEYS, MOVE_RESPONSE, MOVE_SPEED_PER_DISTANCE } from "./constants";
 export function useKeyboardMove() {
   const invalidate = useThree((state) => state.invalidate);
   const pressed = useRef(new Set<string>());
-  const motion = useMemo(
-    () => ({
-      velocity: new Vector3(),
-      desired: new Vector3(),
-      forward: new Vector3(),
-      right: new Vector3(),
-    }),
-    [],
-  );
+  const motionRef = useRef({
+    velocity: new Vector3(),
+    desired: new Vector3(),
+    forward: new Vector3(),
+    right: new Vector3(),
+  });
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -43,7 +40,7 @@ export function useKeyboardMove() {
     () => ({
       // Moves camera and orbit target together; returns true while moving.
       step(delta: number, camera: Camera, orbit: OrbitControlsImpl) {
-        const { velocity, desired, forward, right } = motion;
+        const { velocity, desired, forward, right } = motionRef.current;
         if (document.querySelector("dialog:modal")) {
           pressed.current.clear();
           velocity.set(0, 0, 0);
@@ -82,9 +79,9 @@ export function useKeyboardMove() {
         return true;
       },
       stop() {
-        motion.velocity.set(0, 0, 0);
+        motionRef.current.velocity.set(0, 0, 0);
       },
     }),
-    [motion],
+    [],
   );
 }

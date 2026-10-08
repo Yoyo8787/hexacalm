@@ -91,7 +91,7 @@ function WorldPage({ onBack }: WorldPageProps) {
     <main className="bg-background text-foreground relative h-svh overflow-hidden">
       <div
         inert={hudHidden}
-        className={`pointer-events-none absolute inset-0 z-20 transition-opacity duration-[1200ms] motion-reduce:duration-200 ${hudHidden ? "opacity-0" : "opacity-100"}`}
+        className={`pointer-events-none absolute inset-0 z-20 transition-opacity duration-1200 motion-reduce:duration-200 ${hudHidden ? "opacity-0" : "opacity-100"}`}
       >
         <Header mode={mode} onBack={onBack} onModeChange={setMode}>
           <div className="flex items-center gap-2">
@@ -115,7 +115,7 @@ function WorldPage({ onBack }: WorldPageProps) {
           ref={dock}
           inert={hudHidden}
           style={{ bottom: "max(16px, env(safe-area-inset-bottom))" }}
-          className={`panel absolute left-1/2 z-10 flex max-w-[calc(100%-2rem)] -translate-x-1/2 rounded-2xl transition-opacity duration-[1200ms] motion-reduce:duration-200 ${hudHidden ? "opacity-0" : "opacity-100"} ${
+          className={`panel absolute left-1/2 z-10 flex max-w-[calc(100%-2rem)] -translate-x-1/2 rounded-2xl transition-opacity duration-1200 motion-reduce:duration-200 ${hudHidden ? "opacity-0" : "opacity-100"} ${
             mode === "build"
               ? "w-[min(1080px,calc(100%-2rem))] items-stretch"
               : "w-max items-center gap-1.5 p-1.5"

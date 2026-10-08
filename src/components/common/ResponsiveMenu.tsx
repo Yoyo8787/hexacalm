@@ -46,12 +46,15 @@ function ResponsiveMenu({
   const panel = useRef<HTMLElement>(null);
   const close = useEffectEvent(onClose);
   const [present, setPresent] = useState(open);
+  const [previousOpen, setPreviousOpen] = useState(open);
+
+  if (previousOpen !== open) {
+    setPreviousOpen(open);
+    if (open) setPresent(true);
+  }
 
   useEffect(() => {
-    if (open) {
-      setPresent(true);
-      return;
-    }
+    if (open) return;
     const timer = setTimeout(() => setPresent(false), MENU_ANIMATION_DURATION);
     return () => clearTimeout(timer);
   }, [open]);

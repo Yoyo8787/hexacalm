@@ -17,7 +17,9 @@ function decodeAmbientBuffer(url: string): Promise<Tone.ToneAudioBuffer> {
  * Decoding is shared per url; each caller receives its own buffer handle so
  * that disposing a player never invalidates the cached entry.
  */
-export async function loadAmbientBuffer(url: string): Promise<Tone.ToneAudioBuffer> {
+export async function loadAmbientBuffer(
+  url: string,
+): Promise<Tone.ToneAudioBuffer> {
   const shared = decodedBuffers.get(url) ?? decodeAmbientBuffer(url);
 
   const buffer = await shared;

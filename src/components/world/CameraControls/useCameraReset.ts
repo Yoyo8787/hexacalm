@@ -15,10 +15,10 @@ type ResetView = Record<
 
 // Starts a transition back to the initial Builder view on each reset request.
 export function useCameraReset({
-  controls,
+  controls: controlsRef,
   view,
-  transitioning,
-  transitionElapsed,
+  transitioning: transitioningRef,
+  transitionElapsed: transitionElapsedRef,
 }: {
   controls: RefObject<OrbitControlsImpl | null>;
   view: ResetView;
@@ -34,8 +34,8 @@ export function useCameraReset({
   useEffect(() => {
     if (previousResetCounter.current === resetCameraCounter) return;
     previousResetCounter.current = resetCameraCounter;
-    if (cameraMode !== "builder" || !controls.current) return;
-    const orbit = controls.current;
+    if (cameraMode !== "builder" || !controlsRef.current) return;
+    const orbit = controlsRef.current;
     view.transitionPosition.copy(camera.position);
     view.transitionTarget.copy(orbit.target);
     orbit.enableDamping = false;
@@ -43,8 +43,8 @@ export function useCameraReset({
     orbit.enableDamping = true;
     view.builderPosition.set(...BUILDER_CAMERA_POSITION);
     view.builderTarget.set(0, 0, 0);
-    transitionElapsed.current = 0;
-    transitioning.current = true;
+    transitionElapsedRef.current = 0;
+    transitioningRef.current = true;
     orbit.enabled = false;
     useWorldStore.getState().setCameraStatus({ resetting: true });
     invalidate();
@@ -53,9 +53,9 @@ export function useCameraReset({
     cameraMode,
     camera,
     invalidate,
-    controls,
+    controlsRef,
     view,
-    transitioning,
-    transitionElapsed,
+    transitioningRef,
+    transitionElapsedRef,
   ]);
 }

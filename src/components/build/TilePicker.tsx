@@ -93,10 +93,7 @@ function TilePicker() {
       </div>
       {tiles.length > 0 ? (
         <div className="relative">
-          <div
-            ref={list}
-            className="flex [scrollbar-width:none] gap-1 overflow-x-auto"
-          >
+          <div ref={list} className="flex scrollbar-none gap-1 overflow-x-auto">
             {tiles.map((tile) => (
               <TileItem
                 disabled={removeMode || full}
