@@ -99,13 +99,28 @@ export const TILE_CATALOG: TileDefinition[] = [
     source: "forest",
     weight: 0.7,
   }),
-  defineTile("sand", "沙地", ["ground"]),
-  defineTile("sand-desert", "沙漠", ["ground"]),
-  defineTile("sand-rocks", "沙地岩石", ["ground"]),
-  defineTile("stone", "石地", ["ground"]),
-  defineTile("stone-hill", "石地丘陵", ["ground", "mountain"]),
-  defineTile("stone-mountain", "山脈", ["ground", "mountain"]),
-  defineTile("stone-rocks", "岩地", ["ground"]),
+  defineTile("sand", "沙地", ["ground"], { source: "desert", weight: 0.4 }),
+  defineTile("sand-desert", "沙漠", ["ground"], {
+    source: "desert",
+    weight: 0.4,
+  }),
+  defineTile("sand-rocks", "沙地岩石", ["ground"], {
+    source: "desert",
+    weight: 0.4,
+  }),
+  defineTile("stone", "石地", ["ground"], { source: "mountain", weight: 0.4 }),
+  defineTile("stone-hill", "石地丘陵", ["ground", "mountain"], {
+    source: "mountain",
+    weight: 0.4,
+  }),
+  defineTile("stone-mountain", "山脈", ["ground", "mountain"], {
+    source: "mountain",
+    weight: 0.4,
+  }),
+  defineTile("stone-rocks", "岩地", ["ground"], {
+    source: "mountain",
+    weight: 0.4,
+  }),
   defineTile("water", "水域", ["water"], { source: "water", weight: 0.4 }),
   defineTile("water-island", "水中島", ["water"], {
     source: "water",
@@ -174,8 +189,14 @@ export const TILE_CATALOG: TileDefinition[] = [
     source: "settlement",
     weight: 1,
   }),
-  defineTile("building-mill", "磨坊", ["structure"]),
-  defineTile("building-mine", "礦場", ["structure"]),
+  defineTile("building-mill", "磨坊", ["structure"], {
+    source: "mill",
+    weight: 0.6,
+  }),
+  defineTile("building-mine", "礦場", ["structure"], {
+    source: "mine",
+    weight: 0.6,
+  }),
   defineTile("building-port", "港口", ["structure"], {
     source: "harbor",
     weight: 1,
@@ -184,7 +205,10 @@ export const TILE_CATALOG: TileDefinition[] = [
     source: "rural",
     weight: 0.8,
   }),
-  defineTile("building-smelter", "熔煉場", ["structure"]),
+  defineTile("building-smelter", "熔煉場", ["structure"], {
+    source: "smelter",
+    weight: 0.6,
+  }),
   defineTile("building-tower", "塔樓", ["structure"], {
     source: "settlement",
     weight: 0.6,
@@ -193,8 +217,14 @@ export const TILE_CATALOG: TileDefinition[] = [
     source: "settlement",
     weight: 1,
   }),
-  defineTile("building-wall", "城牆", ["structure"]),
-  defineTile("building-walls", "城牆群", ["structure"]),
+  defineTile("building-wall", "城牆", ["structure"], {
+    source: "settlement",
+    weight: 0.5,
+  }),
+  defineTile("building-walls", "城牆群", ["structure"], {
+    source: "settlement",
+    weight: 0.5,
+  }),
   defineTile("building-watermill", "水車", ["water", "structure"], {
     source: "river",
     weight: 1,

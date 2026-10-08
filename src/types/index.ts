@@ -12,7 +12,18 @@ export interface CharacterViewMotion {
 }
 
 export type AmbientSourceId =
-  "forest" | "river" | "water" | "settlement" | "rural" | "harbor" | "magic";
+  | "forest"
+  | "river"
+  | "water"
+  | "settlement"
+  | "rural"
+  | "harbor"
+  | "magic"
+  | "desert"
+  | "mountain"
+  | "mill"
+  | "mine"
+  | "smelter";
 
 export type TileCategoryId =
   "ground" | "forest" | "mountain" | "water" | "road" | "structure";

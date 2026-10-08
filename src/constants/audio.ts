@@ -25,7 +25,7 @@ export const DEFAULT_AUDIO_SETTINGS: AudioSettings = {
 };
 
 export const CHARACTER_AUDIO = {
-  footstepPath: `${import.meta.env.BASE_URL}audio/characters/footstep.mp3`,
+  footstepPath: `${import.meta.env.BASE_URL}audio/characters/footstep.webm`,
   footstepGain: 0.15,
   callGain: 0.2,
   callIntervalMin: 20,
@@ -83,6 +83,36 @@ export const AMBIENT_SOURCE_CONFIG = {
     maxVolume: 0.2,
     saturationScore: 1,
     priority: 1,
+  },
+  desert: {
+    filePath: `${import.meta.env.BASE_URL}audio/desert.webm`,
+    maxVolume: 0.5,
+    saturationScore: 2,
+    priority: 0.6,
+  },
+  mountain: {
+    filePath: `${import.meta.env.BASE_URL}audio/mountain.webm`,
+    maxVolume: 1.5,
+    saturationScore: 2,
+    priority: 0.6,
+  },
+  mill: {
+    filePath: `${import.meta.env.BASE_URL}audio/mill.webm`,
+    maxVolume: 0.45,
+    saturationScore: 1.0,
+    priority: 0.9,
+  },
+  mine: {
+    filePath: `${import.meta.env.BASE_URL}audio/mine.webm`,
+    maxVolume: 0.6,
+    saturationScore: 1.5,
+    priority: 0.8,
+  },
+  smelter: {
+    filePath: `${import.meta.env.BASE_URL}audio/smelter.webm`,
+    maxVolume: 1.7,
+    saturationScore: 1.5,
+    priority: 0.9,
   },
 } as const satisfies Record<AmbientSourceId, AmbientSourceConfig>;
 

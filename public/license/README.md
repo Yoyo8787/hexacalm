@@ -1,18 +1,12 @@
-# Third-party asset licences
+# 第三方資產授權
 
-This project bundles third-party assets from more than one source. Each source
-keeps its own licence record below; keep every listed file with any distributed
-build or repository release.
+本專案使用以下第三方素材。發布或交接時應保留來源與各自的授權文件。
 
-| Assets                                           | Licence                 | Record                                               |
-| ------------------------------------------------ | ----------------------- | ---------------------------------------------------- |
-| 3D tile models in `/models` (Kenney Hexagon Kit) | Creative Commons Zero   | [`License.txt`](./License.txt)                       |
-| `/audio` 環境音與 `/audio/characters` 角色音效 | Pixabay Content Licence | [`../audio/ATTRIBUTION.md`](../audio/ATTRIBUTION.md) |
-| `/models/characters` 模型與貼圖、`/previews/characters` 原始預覽（Kenney Cube Pets 2.0） | Creative Commons Zero | [`CubePets-License.txt`](./CubePets-License.txt) |
+| 素材 | 來源 | 授權 | 授權文件 |
+| --- | --- | --- | --- |
+| 地塊、道路模型與預覽 | [Kenney Hexagon Kit](https://kenney.nl/assets/hexagon-kit) | CC0 | [Hexagon Kit 授權](./License.txt) |
+| 寵物模型、貼圖與預覽 | [Kenney Cube Pets](https://kenney.nl/assets/cube-pets) | CC0 | [Cube Pets 授權](./CubePets-License.txt) |
+| 環境音（沙漠風聲除外）與角色音效 | Pixabay | Pixabay Content License | [音效來源與授權](../audio/ATTRIBUTION.md) |
+| 沙漠風聲 | DarkShroom，Freesound | CC0 1.0 | [音效來源與授權](../audio/ATTRIBUTION.md) |
 
-The 14 road models in `/models/path-*.glb` come from Kenney's Hexagon Kit and
-retain its CC0 licence. The images in `/previews/path-*.png` were rendered by
-combining the kit's grass base and road models. The original licence is preserved
-in `License.txt`.
-
-角色資產來自 [Kenney Cube Pets](https://kenney.nl/assets/cube-pets)，包含貓、小雞、狗、豬、牛；模型、預覽與貼圖保留原始內容。Cube Pets 不附音效，角色叫聲與共用腳步聲另取自 Pixabay，來源及授權見 `../audio/ATTRIBUTION.md`。
+寵物聲音與模型來自不同來源，授權分開列示。道路預覽與路面資料由 Hexagon Kit 素材衍生，沿用其 CC0 授權。
