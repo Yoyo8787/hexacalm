@@ -18,7 +18,7 @@ const CAPACITY_STYLES = {
 };
 
 function TilePicker() {
-  const [category, setCategory] = useState<TileCategoryId>("ground");
+  const [category, setCategory] = useState<TileCategoryId>("rural");
   const [canScroll, setCanScroll] = useState(false);
   const list = useRef<HTMLDivElement>(null);
   const { selectedTileId, selectTile } = useTileSelection();

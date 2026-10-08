@@ -85,39 +85,42 @@ function defineRoadTile(
 }
 
 export const TILE_CATALOG: TileDefinition[] = [
-  defineTile("grass", "草地", ["ground"], { source: "rural", weight: 0.15 }),
-  defineTile("grass-hill", "草地丘陵", ["ground", "forest", "mountain"], {
+  defineTile("grass", "草地", ["rural"], { source: "rural", weight: 0.15 }),
+  defineTile("grass-hill", "草地丘陵", ["forest"], {
     source: "forest",
     weight: 0.6,
   }),
-  defineTile("grass-forest", "草地森林", ["ground", "forest"], {
+  defineTile("grass-forest", "草地森林", ["forest"], {
     source: "forest",
     weight: 0.8,
   }),
-  defineTile("dirt", "泥土地", ["ground"], { source: "rural", weight: 0.15 }),
-  defineTile("dirt-lumber", "伐木地", ["ground", "forest"], {
+  defineTile("dirt", "泥土地", ["rural"], { source: "rural", weight: 0.15 }),
+  defineTile("dirt-lumber", "伐木地", ["forest"], {
     source: "forest",
     weight: 0.7,
   }),
-  defineTile("sand", "沙地", ["ground"], { source: "desert", weight: 0.4 }),
-  defineTile("sand-desert", "沙漠", ["ground"], {
+  defineTile("sand", "沙地", ["desert"], { source: "desert", weight: 0.4 }),
+  defineTile("sand-desert", "沙漠", ["desert"], {
     source: "desert",
     weight: 0.4,
   }),
-  defineTile("sand-rocks", "沙地岩石", ["ground"], {
+  defineTile("sand-rocks", "沙地岩石", ["desert"], {
     source: "desert",
     weight: 0.4,
   }),
-  defineTile("stone", "石地", ["ground"], { source: "mountain", weight: 0.4 }),
-  defineTile("stone-hill", "石地丘陵", ["ground", "mountain"], {
+  defineTile("stone", "石地", ["mountain"], {
     source: "mountain",
     weight: 0.4,
   }),
-  defineTile("stone-mountain", "山脈", ["ground", "mountain"], {
+  defineTile("stone-hill", "石地丘陵", ["mountain"], {
     source: "mountain",
     weight: 0.4,
   }),
-  defineTile("stone-rocks", "岩地", ["ground"], {
+  defineTile("stone-mountain", "山脈", ["mountain"], {
+    source: "mountain",
+    weight: 0.4,
+  }),
+  defineTile("stone-rocks", "岩地", ["mountain"], {
     source: "mountain",
     weight: 0.4,
   }),
@@ -157,79 +160,79 @@ export const TILE_CATALOG: TileDefinition[] = [
   defineRoadTile("path-intersectionF", "草地岔路 F", [1, 3, 5]),
   defineRoadTile("path-intersectionG", "草地岔路 G", [0, 1, 2, 3, 5]),
   defineRoadTile("path-intersectionH", "草地岔路 H", [0, 1, 2, 3]),
-  defineTile("bridge", "橋樑", ["water", "structure"], {
+  defineTile("bridge", "橋樑", ["water"], {
     source: "water",
     weight: 0.4,
   }),
-  defineTile("building-archery", "弓箭場", ["structure"], {
+  defineTile("building-archery", "弓箭場", ["settlement"], {
     source: "settlement",
     weight: 0.6,
   }),
-  defineTile("building-cabin", "小屋", ["structure"], {
+  defineTile("building-cabin", "小屋", ["settlement"], {
     source: "settlement",
     weight: 0.5,
   }),
-  defineTile("building-castle", "城堡", ["structure"], {
+  defineTile("building-castle", "城堡", ["settlement"], {
     source: "settlement",
     weight: 0.6,
   }),
-  defineTile("building-dock", "碼頭", ["structure"], {
+  defineTile("building-dock", "碼頭", ["water"], {
     source: "harbor",
     weight: 0.9,
   }),
-  defineTile("building-farm", "農場", ["structure"], {
+  defineTile("building-farm", "農場", ["rural"], {
     source: "rural",
     weight: 0.8,
   }),
-  defineTile("building-house", "房屋", ["structure"], {
+  defineTile("building-house", "房屋", ["settlement"], {
     source: "settlement",
     weight: 0.5,
   }),
-  defineTile("building-market", "市場", ["structure"], {
+  defineTile("building-market", "市場", ["settlement"], {
     source: "settlement",
     weight: 1,
   }),
-  defineTile("building-mill", "磨坊", ["structure"], {
+  defineTile("building-mill", "磨坊", ["special"], {
     source: "mill",
     weight: 0.6,
   }),
-  defineTile("building-mine", "礦場", ["structure"], {
+  defineTile("building-mine", "礦場", ["special"], {
     source: "mine",
     weight: 0.6,
   }),
-  defineTile("building-port", "港口", ["structure"], {
+  defineTile("building-port", "港口", ["water"], {
     source: "harbor",
     weight: 1,
   }),
-  defineTile("building-sheep", "牧羊場", ["structure"], {
+  defineTile("building-sheep", "牧羊場", ["rural"], {
     source: "rural",
     weight: 0.8,
   }),
-  defineTile("building-smelter", "熔煉場", ["structure"], {
+  defineTile("building-smelter", "熔煉場", ["special"], {
     source: "smelter",
     weight: 0.6,
   }),
-  defineTile("building-tower", "塔樓", ["structure"], {
+  defineTile("building-tower", "塔樓", ["settlement"], {
     source: "settlement",
     weight: 0.6,
   }),
-  defineTile("building-village", "村莊", ["structure"], {
+  defineTile("building-village", "村莊", ["settlement"], {
     source: "settlement",
     weight: 1,
   }),
-  defineTile("building-wall", "城牆", ["structure"], {
+  defineTile("building-wall", "城牆", ["settlement"], {
     source: "settlement",
     weight: 0.5,
   }),
-  defineTile("building-walls", "城牆群", ["structure"], {
+  defineTile("building-walls", "城牆群", ["settlement"], {
     source: "settlement",
     weight: 0.5,
   }),
-  defineTile("building-watermill", "水車", ["water", "structure"], {
+  defineTile("building-watermill", "水車", ["water"], {
     source: "river",
     weight: 1,
   }),
-  defineTile("building-wizard-tower", "法師塔", ["structure"], {
+  defineTile("building-wizard-tower", "法師塔", ["special"], {
     source: "magic",
     weight: 1,
   }),

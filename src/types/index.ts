@@ -26,7 +26,14 @@ export type AmbientSourceId =
   | "smelter";
 
 export type TileCategoryId =
-  "ground" | "forest" | "mountain" | "water" | "road" | "structure";
+  | "rural"
+  | "forest"
+  | "mountain"
+  | "desert"
+  | "water"
+  | "settlement"
+  | "special"
+  | "road";
 
 export interface HexCoordinate {
   q: number;

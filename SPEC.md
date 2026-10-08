@@ -288,13 +288,18 @@ Tile
 
 ## 8.2 Tile 分類
 
-初始分類固定為：
+Tile Picker 以聲景分類，並保留獨立的道路入口：
 
-- Ground
-- Forest
-- Water
-- Road
-- Structure
+- 田園：草地、泥土地、農場、牧羊場
+- 森林：森林、草地丘陵、伐木地
+- 山地：石地、岩地、山脈
+- 沙漠：沙地、沙漠、沙地岩石
+- 水景：水域、河流、橋樑、水車、碼頭、港口
+- 聚落：房屋、村莊、市場、城堡等聚落建築
+- 特殊聲景：磨坊、礦場、熔煉場、法師塔
+- 道路：所有道路 Tile，方便建造與寵物行走
+
+預設開啟田園分類。同一聲景可包含不同音源；分類提示聲音傾向，實際播放仍由世界組成、Listener 與混音規則決定。
 
 Tile 可以同時屬於多個分類。
 
@@ -303,8 +308,8 @@ Tile 可以同時屬於多個分類。
 ```text
 Forest Road Tile
 categories:
-- Forest
-- Road
+- 森林
+- 道路
 ```
 
 複合 Tile 不需要建立獨立的 Composite 分類。
@@ -333,7 +338,7 @@ Tile 可帶有音訊相關屬性。
 - 單一 Water Tile 產生基礎水聲
 - 多個相連 Water Tile 可產生更大範圍水域效果
 - 多個 Forest Tile 可增加森林環境音權重
-- Structure Tile 可提供局部特殊聲音
+- 磨坊、礦場等 Tile 可提供局部特殊聲音
 
 詳細音訊組合規則不在本文件定義，後續以 Tile Catalog Spec 或 Audio Rule Spec 補充。
 

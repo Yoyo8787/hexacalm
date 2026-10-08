@@ -2,7 +2,9 @@ import {
   House,
   Mountain,
   Route,
+  Sparkles,
   Sprout,
+  Sun,
   Trees,
   Waves,
   type LucideIcon,
@@ -11,12 +13,14 @@ import type { TileCategoryId } from "../../types";
 import { TILE_CATEGORY_LABELS } from "../tile/constants";
 
 const CATEGORY_ICONS: Record<TileCategoryId, LucideIcon> = {
-  ground: Sprout,
+  rural: Sprout,
   forest: Trees,
   mountain: Mountain,
+  desert: Sun,
   water: Waves,
+  settlement: House,
+  special: Sparkles,
   road: Route,
-  structure: House,
 };
 
 interface TileCategoryTabsProps {

@@ -6,10 +6,12 @@ export const HEX_RADIUS = HEX_SIZE / Math.sqrt(3);
 export const HEX_ROTATION_STEP = Math.PI / 3;
 
 export const TILE_CATEGORY_LABELS: Record<TileCategoryId, string> = {
-  ground: "地面",
+  rural: "田園",
   forest: "森林",
-  mountain: "山脈",
-  water: "水域",
+  mountain: "山地",
+  desert: "沙漠",
+  water: "水景",
+  settlement: "聚落",
+  special: "特殊聲景",
   road: "道路",
-  structure: "建築",
 };
