@@ -12,6 +12,6 @@ export const TILE_CATEGORY_LABELS: Record<TileCategoryId, string> = {
   desert: "沙漠",
   water: "水景",
   settlement: "聚落",
-  special: "特殊聲景",
+  special: "特殊",
   road: "道路",
 };

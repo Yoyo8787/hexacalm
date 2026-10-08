@@ -86,16 +86,16 @@ function defineRoadTile(
 
 export const TILE_CATALOG: TileDefinition[] = [
   defineTile("grass", "草地", ["rural"], { source: "rural", weight: 0.15 }),
-  defineTile("grass-hill", "草地丘陵", ["forest"], {
+  defineTile("grass-hill", "丘陵+森林", ["forest"], {
     source: "forest",
     weight: 0.6,
   }),
-  defineTile("grass-forest", "草地森林", ["forest"], {
+  defineTile("grass-forest", "森林", ["forest"], {
     source: "forest",
     weight: 0.8,
   }),
-  defineTile("dirt", "泥土地", ["rural"], { source: "rural", weight: 0.15 }),
-  defineTile("dirt-lumber", "伐木地", ["forest"], {
+  defineTile("dirt", "土地", ["rural"], { source: "rural", weight: 0.15 }),
+  defineTile("dirt-lumber", "林場", ["forest"], {
     source: "forest",
     weight: 0.7,
   }),
@@ -104,7 +104,7 @@ export const TILE_CATALOG: TileDefinition[] = [
     source: "desert",
     weight: 0.4,
   }),
-  defineTile("sand-rocks", "沙地岩石", ["desert"], {
+  defineTile("sand-rocks", "沙岩地", ["desert"], {
     source: "desert",
     weight: 0.4,
   }),
@@ -112,7 +112,7 @@ export const TILE_CATALOG: TileDefinition[] = [
     source: "mountain",
     weight: 0.4,
   }),
-  defineTile("stone-hill", "石地丘陵", ["mountain"], {
+  defineTile("stone-hill", "丘陵", ["mountain"], {
     source: "mountain",
     weight: 0.4,
   }),
@@ -125,18 +125,18 @@ export const TILE_CATALOG: TileDefinition[] = [
     weight: 0.4,
   }),
   defineTile("water", "水域", ["water"], { source: "water", weight: 0.4 }),
-  defineTile("water-island", "水中島", ["water"], {
+  defineTile("water-island", "湖中島", ["water"], {
     source: "water",
     weight: 0.3,
   }),
-  defineTile("water-rocks", "水中岩石", ["water"], {
+  defineTile("water-rocks", "暗礁", ["water"], {
     source: "water",
     weight: 0.3,
   }),
   defineRiverTile("river-start", "河流源頭", [3], 0.8),
   defineRiverTile("river-end", "河流末端", [3], 0.8),
   defineRiverTile("river-straight", "直線河流", [0, 3], 0.8),
-  defineRiverTile("river-corner", "河流轉角", [1, 3], 0.8),
+  defineRiverTile("river-corner", "彎曲河流", [1, 3], 0.8),
   defineRiverTile("river-crossing", "河流交會", [0, 1, 2, 3, 4, 5], 1),
   defineRiverTile("river-intersectionA", "河流岔口 A", [1, 2, 3], 1),
   defineRiverTile("river-intersectionB", "河流岔口 B", [0, 1, 3], 1),
@@ -146,20 +146,20 @@ export const TILE_CATALOG: TileDefinition[] = [
   defineRiverTile("river-intersectionF", "河流岔口 F", [1, 3, 5], 1),
   defineRiverTile("river-intersectionG", "河流岔口 G", [0, 1, 2, 3, 5], 1),
   defineRiverTile("river-intersectionH", "河流岔口 H", [0, 1, 2, 3], 1),
-  defineRoadTile("path-straight", "草地直路", [0, 3]),
-  defineRoadTile("path-corner", "草地彎路", [1, 3]),
-  defineRoadTile("path-corner-sharp", "草地急彎", [2, 3]),
-  defineRoadTile("path-start", "草地道路起點", [3]),
-  defineRoadTile("path-end", "草地道路終點", [3]),
-  defineRoadTile("path-crossing", "草地六向路口", [0, 1, 2, 3, 4, 5]),
-  defineRoadTile("path-intersectionA", "草地岔路 A", [1, 2, 3]),
-  defineRoadTile("path-intersectionB", "草地岔路 B", [0, 1, 3]),
-  defineRoadTile("path-intersectionC", "草地岔路 C", [0, 3, 5]),
-  defineRoadTile("path-intersectionD", "草地岔路 D", [0, 1, 3, 5]),
-  defineRoadTile("path-intersectionE", "草地岔路 E", [0, 2, 3, 5]),
-  defineRoadTile("path-intersectionF", "草地岔路 F", [1, 3, 5]),
-  defineRoadTile("path-intersectionG", "草地岔路 G", [0, 1, 2, 3, 5]),
-  defineRoadTile("path-intersectionH", "草地岔路 H", [0, 1, 2, 3]),
+  defineRoadTile("path-straight", "直路", [0, 3]),
+  defineRoadTile("path-corner", "彎路", [1, 3]),
+  defineRoadTile("path-corner-sharp", "急彎", [2, 3]),
+  defineRoadTile("path-start", "道路起點", [3]),
+  defineRoadTile("path-end", "道路終點", [3]),
+  defineRoadTile("path-crossing", "六向路口", [0, 1, 2, 3, 4, 5]),
+  defineRoadTile("path-intersectionA", "岔路 A", [1, 2, 3]),
+  defineRoadTile("path-intersectionB", "岔路 B", [0, 1, 3]),
+  defineRoadTile("path-intersectionC", "岔路 C", [0, 3, 5]),
+  defineRoadTile("path-intersectionD", "岔路 D", [0, 1, 3, 5]),
+  defineRoadTile("path-intersectionE", "岔路 E", [0, 2, 3, 5]),
+  defineRoadTile("path-intersectionF", "岔路 F", [1, 3, 5]),
+  defineRoadTile("path-intersectionG", "岔路 G", [0, 1, 2, 3, 5]),
+  defineRoadTile("path-intersectionH", "岔路 H", [0, 1, 2, 3]),
   defineTile("bridge", "橋樑", ["water"], {
     source: "water",
     weight: 0.4,
@@ -168,7 +168,7 @@ export const TILE_CATALOG: TileDefinition[] = [
     source: "settlement",
     weight: 0.6,
   }),
-  defineTile("building-cabin", "小屋", ["settlement"], {
+  defineTile("building-cabin", "山上小屋", ["settlement"], {
     source: "settlement",
     weight: 0.5,
   }),
@@ -188,7 +188,7 @@ export const TILE_CATALOG: TileDefinition[] = [
     source: "settlement",
     weight: 0.5,
   }),
-  defineTile("building-market", "市場", ["settlement"], {
+  defineTile("building-market", "市集", ["settlement"], {
     source: "settlement",
     weight: 1,
   }),
@@ -196,7 +196,7 @@ export const TILE_CATALOG: TileDefinition[] = [
     source: "mill",
     weight: 0.6,
   }),
-  defineTile("building-mine", "礦場", ["special"], {
+  defineTile("building-mine", "礦洞", ["special"], {
     source: "mine",
     weight: 0.6,
   }),
@@ -204,17 +204,17 @@ export const TILE_CATALOG: TileDefinition[] = [
     source: "harbor",
     weight: 1,
   }),
-  defineTile("building-sheep", "牧羊場", ["rural"], {
+  defineTile("building-sheep", "羊", ["rural"], {
     source: "rural",
     weight: 0.8,
   }),
-  defineTile("building-smelter", "熔煉場", ["special"], {
+  defineTile("building-smelter", "鐵匠鋪", ["special"], {
     source: "smelter",
     weight: 0.6,
   }),
-  defineTile("building-tower", "塔樓", ["settlement"], {
-    source: "settlement",
-    weight: 0.6,
+  defineTile("building-tower", "塔樓", ["special"], {
+    source: "magic",
+    weight: 0.8,
   }),
   defineTile("building-village", "村莊", ["settlement"], {
     source: "settlement",
@@ -224,7 +224,7 @@ export const TILE_CATALOG: TileDefinition[] = [
     source: "settlement",
     weight: 0.5,
   }),
-  defineTile("building-walls", "城牆群", ["settlement"], {
+  defineTile("building-walls", "堡壘", ["settlement"], {
     source: "settlement",
     weight: 0.5,
   }),
