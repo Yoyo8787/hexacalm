@@ -308,6 +308,7 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
       return;
     }
 
+    cancelGestureWait();
     ensureMasterGain();
     updateSleepGain();
     updateMasterGain(AUDIO_FADE.playIn);
@@ -339,6 +340,9 @@ export function createAmbientAudioEngine(): AmbientAudioEngine {
       return;
     }
 
+    if (Tone.getContext().state !== "running") {
+      waitForGesture();
+    }
     const currentGeneration = generation;
     startPlayback().catch((error) => {
       if (!playing || currentGeneration !== generation) return;

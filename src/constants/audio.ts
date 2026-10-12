@@ -21,7 +21,7 @@ export const DEFAULT_AUDIO_SETTINGS: AudioSettings = {
   callsEnabled: true,
   volume: DEFAULT_MASTER_VOLUME,
   muted: false,
-  playing: false,
+  playing: true,
 };
 
 export const CHARACTER_AUDIO = {
