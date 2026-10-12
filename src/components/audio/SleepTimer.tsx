@@ -1,6 +1,7 @@
 import { useId, useRef, useState } from "react";
 import { Timer, X } from "lucide-react";
 import { useSleepTimer } from "../../hooks/useSleepTimer";
+import { useDialogBackdropClose } from "../../hooks/useDialogBackdropClose";
 
 const PRESETS = [15, 30, 60] as const;
 
@@ -11,6 +12,7 @@ interface SleepTimerProps {
 function SleepTimer({ onOpenChange }: SleepTimerProps) {
   const { remainingMinutes, remainingSeconds, start, cancel } = useSleepTimer();
   const dialog = useRef<HTMLDialogElement>(null);
+  const backdropClose = useDialogBackdropClose();
   const titleId = useId();
   const inputId = useId();
   const errorId = useId();
@@ -58,17 +60,7 @@ function SleepTimer({ onOpenChange }: SleepTimerProps) {
         className="bg-surface text-foreground border-line fixed inset-0 m-auto max-h-[calc(100svh-2rem)] w-[min(440px,calc(100%-2rem))] overflow-auto rounded-2xl border p-6 shadow-2xl backdrop:bg-black/60"
         onKeyDown={(event) => event.stopPropagation()}
         onClose={() => onOpenChange(false)}
-        onClick={(event) => {
-          if (event.target !== event.currentTarget) return;
-          const bounds = event.currentTarget.getBoundingClientRect();
-          if (
-            event.clientX < bounds.left ||
-            event.clientX > bounds.right ||
-            event.clientY < bounds.top ||
-            event.clientY > bounds.bottom
-          )
-            dialog.current?.close();
-        }}
+        {...backdropClose}
       >
         <div className="flex items-center justify-between gap-4">
           <h2 id={titleId} className="text-xl font-semibold">

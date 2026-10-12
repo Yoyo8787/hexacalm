@@ -146,7 +146,7 @@ function WorldPage({ onBack }: WorldPageProps) {
         </DockFeedback>
         {mode === "build" && (
           <>
-            <BuildToolbar />
+            <BuildToolbar onHelpOpen={() => setOpenMenu(null)} />
             <CursorHint />
           </>
         )}

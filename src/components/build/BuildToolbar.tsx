@@ -1,8 +1,9 @@
 import { Rotate3D, Redo2, Trash2, Undo2 } from "lucide-react";
 import { useBuildActions } from "../../hooks";
 import { useWorldStore } from "../../stores";
+import BuildHelp from "./BuildHelp";
 
-function BuildToolbar() {
+function BuildToolbar({ onHelpOpen }: { onHelpOpen: () => void }) {
   const { undo, redo, toggleRemoveMode } = useBuildActions();
   const removeMode = useWorldStore((state) => state.removeMode);
   const selectedTileId = useWorldStore((state) => state.selectedTileId);
@@ -60,6 +61,8 @@ function BuildToolbar() {
       >
         <Redo2 className="size-4" />
       </button>
+      <span className="bg-line mx-2 my-0.75 h-px" />
+      <BuildHelp onOpen={onHelpOpen} />
     </div>
   );
 }
